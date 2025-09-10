@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://ypck5285upfy"]
+
+[ext_resource type="PackedScene" uid="uid://wkq5kgabux7s" path="res://scenes/player.tscn" id="1_o5qli"]
+[ext_resource type="PackedScene" uid="uid://b8plt5tqj7bje" path="res://scenes/airfield.tscn" id="2_0wfyh"]
+
+[node name="Main" type="Node3D"]
+
+[node name="Player" parent="." instance=ExtResource("1_o5qli")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.89611, 0)
+collision_mask = 2
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.701929, -0.480187, 0.526038, 0, 0.738561, 0.674186, -0.712247, -0.473231, 0.518418, 0, 1.54736, 1.80861)
+shadow_enabled = true
+
+[node name="Airfield" parent="." instance=ExtResource("2_0wfyh")]
