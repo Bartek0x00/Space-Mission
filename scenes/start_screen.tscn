@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://bmpw3y6v87q5o"]
+
+[ext_resource type="Script" uid="uid://jnwlmcxm1ye6" path="res://scripts/start_screen.gd" id="1_tx5wa"]
+
+[node name="StartScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tx5wa")
+
+[node name="JoinButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 584.0
+offset_top = 365.0
+offset_right = 665.0
+offset_bottom = 428.0
+theme_override_font_sizes/font_size = 40
+text = "Join"
+
+[node name="HostButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 470.0
+offset_top = 365.0
+offset_right = 568.0
+offset_bottom = 428.0
+theme_override_font_sizes/font_size = 40
+text = "Host"
+
+[connection signal="button_down" from="JoinButton" to="." method="_on_join_button_button_down"]
+[connection signal="button_down" from="HostButton" to="." method="_on_host_button_button_down"]

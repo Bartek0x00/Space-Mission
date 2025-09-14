@@ -1,0 +1,54 @@
+[gd_scene load_steps=7 format=3 uid="uid://25nsq23mqj57"]
+
+[ext_resource type="Script" uid="uid://8ln4aj57xhgr" path="res://scripts/bullet.gd" id="1_mkf8s"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h1aey"]
+albedo_color = Color(1, 0.7305, 0.23, 1)
+metallic = 0.55
+roughness = 0.39
+
+[sub_resource type="SphereMesh" id="SphereMesh_mkf8s"]
+material = SubResource("StandardMaterial3D_h1aey")
+radius = 0.1
+height = 0.2
+radial_segments = 32
+rings = 16
+is_hemisphere = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_y25gk"]
+radius = 0.1
+height = 0.25
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mkf8s"]
+albedo_color = Color(1, 0.4, 0, 1)
+roughness = 0.1
+emission_enabled = true
+emission = Color(1, 0.4, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_y25gk"]
+
+[node name="Bullet" type="RigidBody3D"]
+continuous_cd = true
+contact_monitor = true
+max_contacts_reported = 4
+script = ExtResource("1_mkf8s")
+metadata/_edit_group_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.1)
+rotation_edit_mode = 2
+mesh = SubResource("SphereMesh_mkf8s")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, 1, 0, -0.00935087, 0.00723504, 0.0238898)
+rotation_edit_mode = 2
+shape = SubResource("CapsuleShape3D_y25gk")
+
+[node name="CPUParticles3D" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.16163)
+material_override = SubResource("StandardMaterial3D_mkf8s")
+amount = 32
+mesh = SubResource("SphereMesh_y25gk")
+gravity = Vector3(0, 0, 0)
+scale_amount_min = 0.05
+scale_amount_max = 0.1

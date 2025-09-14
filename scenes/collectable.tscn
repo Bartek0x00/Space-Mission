@@ -1,0 +1,62 @@
+[gd_scene load_steps=5 format=3 uid="uid://bxl7fugdldugv"]
+
+[ext_resource type="Script" uid="uid://wb6pa58votu3" path="res://scripts/collectable.gd" id="1_ti8a4"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_llqga"]
+radius = 1.75
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ti8a4"]
+albedo_color = Color(0.54, 0.54, 0.54, 1)
+metallic = 1.0
+roughness = 0.3
+
+[sub_resource type="BoxMesh" id="BoxMesh_llfh3"]
+material = SubResource("StandardMaterial3D_ti8a4")
+
+[node name="Collectable" type="RigidBody3D"]
+collision_layer = 32
+collision_mask = 49
+contact_monitor = true
+max_contacts_reported = 4
+script = ExtResource("1_ti8a4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_llqga")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.518644, 0.0107966, -0.654358, -0.727725, 0.0134565, 0, 0.448804, 0.00934275, 0.756185, 0, 0, 0)
+mesh = SubResource("BoxMesh_llfh3")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.393575, -0.00819305, -0.818972, -0.907161, 0.00063117, 0.419553, -0.148856, 0.0178159, -0.391485, 0.179573, 0, -0.438395)
+mesh = SubResource("BoxMesh_llfh3")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.393575, -0.00819305, -0.818972, 0.349879, -0.0174982, 0.286622, -0.850108, -0.0034086, 0.497125, 0.179573, -0.235852, 0.446562)
+mesh = SubResource("BoxMesh_llfh3")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.51716, 0.00889645, -0.725901, -0.0993051, -0.0171513, -0.475326, -0.850108, -0.0034086, 0.497125, -0.371395, 0.287881, 0.446562)
+mesh = SubResource("BoxMesh_llfh3")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.281974, -0.012696, -0.708339, 0.444755, -0.0145645, 0.501122, -0.850108, -0.0034086, 0.497125, -0.371395, 0.287881, -0.779027)
+mesh = SubResource("BoxMesh_llfh3")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.24767, -0.0115135, -0.770898, -0.332753, -0.0156724, 0.501178, -0.909909, 0.00259749, -0.393113, 0.262976, 0.350872, 0.985652)
+mesh = SubResource("BoxMesh_llfh3")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.0774176, -0.0193303, -0.152617, -0.407519, -0.00212744, 0.906736, -0.909909, 0.00259749, -0.393113, 0.262976, -0.509428, 0.164462)
+mesh = SubResource("BoxMesh_llfh3")
+
+[node name="MeshInstance3D9" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.258592, -0.0189179, 0.0582089, -0.525301, -0.00176178, 0.846165, -0.810672, -0.00489293, -0.529733, 0.262976, 0.275612, -0.547925)
+mesh = SubResource("BoxMesh_llfh3")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.298749, -0.00470134, -0.923758, -0.454151, -0.0160025, 0.358451, -0.839342, 0.010332, 0.134845, 0.484934, 0, 0.0812305)
+mesh = SubResource("BoxMesh_llfh3")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

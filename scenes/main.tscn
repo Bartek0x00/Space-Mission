@@ -1,9 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://ypck5285upfy"]
+[gd_scene load_steps=5 format=3 uid="uid://ypck5285upfy"]
 
+[ext_resource type="Script" uid="uid://6h80g83l7sx0" path="res://scripts/main.gd" id="1_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://wkq5kgabux7s" path="res://scenes/player.tscn" id="1_o5qli"]
 [ext_resource type="PackedScene" uid="uid://b8plt5tqj7bje" path="res://scenes/airfield.tscn" id="2_0wfyh"]
+[ext_resource type="PackedScene" uid="uid://bxl7fugdldugv" path="res://scenes/collectable.tscn" id="3_sugp2"]
 
 [node name="Main" type="Node3D"]
+script = ExtResource("1_jyhfs")
 
 [node name="Player" parent="." instance=ExtResource("1_o5qli")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.89611, 0)
@@ -14,3 +17,28 @@ transform = Transform3D(0.701929, -0.480187, 0.526038, 0, 0.738561, 0.674186, -0
 shadow_enabled = true
 
 [node name="Airfield" parent="." instance=ExtResource("2_0wfyh")]
+collision_layer = 16
+
+[node name="Collectable" parent="." instance=ExtResource("3_sugp2")]
+transform = Transform3D(0.946328, 0.323207, 0, -0.323207, 0.946328, 0, 0, 0, 1, -35.5113, 19.1792, -70.6894)
+
+[node name="Collectable2" parent="." instance=ExtResource("3_sugp2")]
+transform = Transform3D(0.772219, 0.263743, -0.578029, -0.537004, -0.215291, -0.815645, -0.339565, 0.940261, -0.0246209, 58.9153, -2.78223, -123.316)
+
+[node name="Collectable3" parent="." instance=ExtResource("3_sugp2")]
+transform = Transform3D(0.994349, 0.031251, 0.101459, 0.101176, 0.0104893, -0.994813, -0.0321534, 0.999457, 0.00726815, 58.9153, -18.7932, 1.54034)
+
+[node name="Collectable4" parent="." instance=ExtResource("3_sugp2")]
+transform = Transform3D(-0.328121, -0.891655, -0.311912, 0.196191, 0.258667, -0.945833, 0.924037, -0.371543, 0.0900607, -5.18584, 5.95644, -198.972)
+
+[node name="Collectable5" parent="." instance=ExtResource("3_sugp2")]
+transform = Transform3D(-0.328121, -0.891655, -0.311912, 0.196191, 0.258667, -0.945833, 0.924037, -0.371543, 0.0900607, -48.0803, 41.2057, 20.9024)
+
+[node name="Collectable6" parent="." instance=ExtResource("3_sugp2")]
+transform = Transform3D(-0.36321, -0.930864, 0.0396475, -0.931061, 0.361044, -0.0526594, 0.0347042, -0.0560406, -0.997825, -4.92794, -27.8957, 45.7608)
+
+[node name="Collectable7" parent="." instance=ExtResource("3_sugp2")]
+transform = Transform3D(-0.36321, -0.930864, 0.0396475, -0.768679, 0.323432, 0.551839, -0.52651, 0.169957, -0.833008, -59.8218, -51.5682, 3.53918)
+
+[node name="Collectable8" parent="." instance=ExtResource("3_sugp2")]
+transform = Transform3D(0.314412, -0.871423, -0.376521, -0.789894, -0.46015, 0.405376, -0.526509, 0.169957, -0.833008, 42.6928, 37.237, 31.8742)

@@ -1,50 +1,76 @@
 extends CharacterBody3D
 
-const MOUSE_SENSITIVITY: float = 0.003
+const MOUSE_SENSITIVITY: float = 0.0001
 
-const THROTTLE_SENSITIVITY: float = 4.0
-const MAX_THROTTLE: float = 10.0
+const THROTTLE_SENSITIVITY: float = 0.25
+const MAX_THROTTLE: float = 50.0
 
-const ROTATION_SENSITIVITY: float = 0.005
+const ROTATION_SENSITIVITY: float = 0.01
 
 var throttle: float = 0.0
-var line: Line2D
 
-var yaw: float = 0.0
-var pitch: float = 0.0
-var roll: float = 0.0
+const SHOOT_COOLDOWN: float = 0.4
+@export var bullet_scene: PackedScene = preload("res://scenes/bullet.tscn")
+@export var bullet_cooldown: float
+var last_shot_time: float = -1.0
+
+var score: int = 0
+var _last_score: int = 0
+
+func shoot_bullets() -> void:
+	var now = Time.get_ticks_msec() / 1000.0
+	if now - last_shot_time >= SHOOT_COOLDOWN:
+		for gun in $Guns.get_children():
+			var bullet = bullet_scene.instantiate()
+			get_parent().add_child(bullet)
+			bullet.global_transform = gun.global_transform
+			bullet.linear_velocity = -bullet.transform.basis.z * bullet.SPEED
+		last_shot_time = now
+
+func add_score(value: int) -> void:
+	score += value
+	if score != _last_score:
+		$UI/Score.text = "Score: " + str(score)
+		_last_score = score
 
 func _ready() -> void:
 	var img = preload("res://assets/crosshair2.png").get_image()
 	img.resize(32, 32, Image.INTERPOLATE_BILINEAR)
 	DisplayServer.cursor_set_custom_image(img, DisplayServer.CURSOR_ARROW, Vector2(16, 16))
 
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("throttle_down"):
-		throttle -= THROTTLE_SENSITIVITY
-		throttle = clamp(throttle, 0.0, MAX_THROTTLE)
-	if event.is_action_pressed("throttle_up"):
-		throttle += THROTTLE_SENSITIVITY
-		throttle = clamp(throttle, 0.0, MAX_THROTTLE)
-	
-	if event.is_action_pressed("escape"):
-		if get_tree().root.process_mode != Node.PROCESS_MODE_DISABLED:
-			get_tree().root.process_mode = Node.PROCESS_MODE_DISABLED
-		else:
-			get_tree().root.process_mode = Node.PROCESS_MODE_INHERIT
+func _input(event: InputEvent) -> void:	
+	if event.is_action_released("shoot"):
+		shoot_bullets()
 
-func _physics_process(delta: float) -> void:
-	var screen_center = get_window().size * 0.5
-	var mouse_pos = get_viewport().get_mouse_position()
-	var rot_vector = (mouse_pos - screen_center) * Vector2(-1, -1)
+func _physics_process(_delta: float) -> void:
+	var rot_vector = Vector2.ZERO
+	if get_window().has_focus():
+		var mouse_pos = get_viewport().get_mouse_position()
+		var screen_center = get_window().size * 0.5
+		rot_vector = (mouse_pos - screen_center) * Vector2(-1, -1)
 	
-	rotation_degrees.y += rot_vector.x * MOUSE_SENSITIVITY
-	rotation_degrees.x += rot_vector.y * MOUSE_SENSITIVITY
+	var local_right = (quaternion * Vector3.RIGHT).normalized()
+	var local_up = (quaternion * Vector3.UP).normalized()
+	var local_forward = (quaternion * Vector3.FORWARD).normalized()
+	
+	quaternion = Quaternion(local_up, rot_vector.x * MOUSE_SENSITIVITY) * quaternion
+	quaternion = Quaternion(local_right, rot_vector.y * MOUSE_SENSITIVITY) * quaternion
+	quaternion = Quaternion(local_forward, -rot_vector.x * 0.00005) * quaternion
 	
 	if Input.is_action_pressed("ui_left"):
-		rotation_degrees.z += ROTATION_SENSITIVITY
+		quaternion = Quaternion(local_forward, -ROTATION_SENSITIVITY) * quaternion
 	if Input.is_action_pressed("ui_right"):
-		rotation_degrees.z -= ROTATION_SENSITIVITY
+		quaternion = Quaternion(local_forward, ROTATION_SENSITIVITY) * quaternion
 	
-	velocity = -transform.basis.z * throttle
+	quaternion = quaternion.normalized()
+	
+	if Input.is_action_pressed("throttle_down"):
+		throttle -= THROTTLE_SENSITIVITY
+		throttle = clamp(throttle, 0.0, MAX_THROTTLE)
+		$UI/Throttle.value = throttle
+	if Input.is_action_pressed("throttle_up"):
+		throttle += THROTTLE_SENSITIVITY
+		throttle = clamp(throttle, 0.0, MAX_THROTTLE)
+		$UI/Throttle.value = throttle
+	velocity = -basis.z * throttle
 	move_and_slide()
