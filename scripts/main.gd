@@ -1,34 +1,56 @@
 extends Node3D
 
-signal player_connected(peer_id, player_info)
-
 var players = {}
-var players_count: int = 0
 
-var player_info = {"nickname": "Rafau"}
+@export var player_scene: PackedScene = preload("res://scenes/player.tscn")
 
 func _ready() -> void:
-	player_connected.connect(_on_player_connected)
+	multiplayer.connected_to_server.connect(_spawn_local_player)
+	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
 func init_server(port: int = 12345) -> void:
 	var peer = ENetMultiplayerPeer.new()
 	var error = peer.create_server(port, 32)
-	if error:
-		print(error)
-	else:
-		print("Server waiting for connection...")
-		multiplayer.multiplayer_peer = peer
-		players[1] = player_info
-		player_connected.emit(1, player_info)
+	if error != OK:
+		push_error(error)
+		return
+	multiplayer.multiplayer_peer = peer
+	_spawn_local_player()
 
 func init_client(addr: String = "127.0.0.1", port: int = 12345) -> void:
 	var peer = ENetMultiplayerPeer.new()
 	var error = peer.create_client(addr, port)
-	if error:
-		print(error)
-	else:
-		print("Connected to the server")
-		multiplayer.multiplayer_peer = peer
+	if error != OK:
+		push_error(error)
+		return
+	multiplayer.multiplayer_peer = peer
 
-func _on_player_connected(peer_id, player_info) -> void:
-	print("Player %s (%d) connected", player_info.nickname, peer_id)
+
+func _spawn_local_player() -> void:
+	var my_id = multiplayer.get_unique_id()
+	if players.has(my_id):
+		return
+	var player = player_scene.instantiate()
+	player.is_local_player = true
+	player.player_id = my_id
+	add_child(player)
+	players[my_id] = player
+
+@rpc("any_peer", "call_local", "unreliable")
+func network_update_transform(peer_id: int, xform: Transform3D) -> void:
+	if peer_id == multiplayer.get_unique_id():
+		return
+	
+	if not players.has(peer_id):
+		var remote = player_scene.instantiate()
+		remote.is_local_player = false
+		remote.player_id = peer_id
+		add_child(remote)
+		players[peer_id] = remote
+	
+	players[peer_id].global_transform = xform
+
+func _on_peer_disconnected(id: int) -> void:
+	if players.has(id):
+		players[id].queue_free()
+		players.erase(id)

@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+var is_local_player: bool = false
+var player_id: int = 0
+
 const MOUSE_SENSITIVITY: float = 0.0001
 
 const THROTTLE_SENSITIVITY: float = 0.25
@@ -33,6 +36,19 @@ func add_score(value: int) -> void:
 		$UI/Score.text = "Score: " + str(score)
 		_last_score = score
 
+func _send_network_transform() -> void:
+	if not is_inside_tree():
+		return
+	
+	if multiplayer.multiplayer_peer == null:
+		return
+		
+	var main_path = get_node_or_null("/root/Main")
+	if main_path == null or not is_instance_valid(main_path):
+		return
+		
+	main_path.rpc("network_update_transform", player_id, global_transform)
+
 func _ready() -> void:
 	var img = preload("res://assets/crosshair2.png").get_image()
 	img.resize(32, 32, Image.INTERPOLATE_BILINEAR)
@@ -42,12 +58,20 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_released("shoot"):
 		shoot_bullets()
 
-func _physics_process(_delta: float) -> void:
-	var rot_vector = Vector2.ZERO
+var rot_vector: Vector2 = Vector2.ZERO
+
+var _sync_timer: float = 0.0
+var _sync_interval: float = 0.05
+
+func _physics_process(delta: float) -> void:
+	if not is_local_player:
+		return
+	
 	if get_window().has_focus():
 		var mouse_pos = get_viewport().get_mouse_position()
 		var screen_center = get_window().size * 0.5
-		rot_vector = (mouse_pos - screen_center) * Vector2(-1, -1)
+		if get_viewport().get_visible_rect().has_point(mouse_pos):
+			rot_vector = (mouse_pos - screen_center) * Vector2(-1, -1)
 	
 	var local_right = (quaternion * Vector3.RIGHT).normalized()
 	var local_up = (quaternion * Vector3.UP).normalized()
@@ -74,3 +98,8 @@ func _physics_process(_delta: float) -> void:
 		$UI/Throttle.value = throttle
 	velocity = -basis.z * throttle
 	move_and_slide()
+	
+	_sync_timer += delta
+	if _sync_timer >= _sync_interval:
+		_sync_timer = 0.0
+		_send_network_transform()
