@@ -13,7 +13,7 @@ config_version=5
 config/name="Space-Mission"
 run/main_scene="uid://bmpw3y6v87q5o"
 config/features=PackedStringArray("4.4", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://bo1qv6imctjud"
 
 [autoload]
 
