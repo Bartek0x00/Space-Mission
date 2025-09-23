@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Space-Mission"
 run/main_scene="uid://bmpw3y6v87q5o"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="uid://bo1qv6imctjud"
 
 [autoload]
@@ -26,6 +26,7 @@ window/subwindows/embed_subwindows=false
 [global_group]
 
 player=""
+bullet=""
 
 [input]
 
@@ -75,6 +76,7 @@ shoot={
 3d_physics/layer_4="enemy_bullet"
 3d_physics/layer_5="immovable"
 3d_physics/layer_6="collectable"
+3d_physics/layer_7="asteroid"
 
 [physics]
 

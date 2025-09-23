@@ -1,12 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://wkq5kgabux7s"]
+[gd_scene load_steps=8 format=3 uid="uid://wkq5kgabux7s"]
 
 [ext_resource type="PackedScene" uid="uid://bduivf6jksy8l" path="res://assets/player.gltf" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://bws1ajo4ln3nm" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://dx6b8gilf2tu7" path="res://assets/environment.png" id="3_dqkch"]
-[ext_resource type="Texture2D" uid="uid://cddsj5e431p5r" path="res://assets/crosshair1.png" id="3_qhqgy"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_g2els"]
-size = Vector3(8, 2.5, 10.5259)
+[ext_resource type="Texture2D" uid="uid://cddsj5e431p5r" path="res://assets/ui/crosshair1.png" id="3_qhqgy"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qlg0r"]
 panorama = ExtResource("3_dqkch")
@@ -20,23 +17,21 @@ sky = SubResource("Sky_qhqgy")
 ambient_light_source = 3
 
 [node name="Player" type="CharacterBody3D" groups=["player"]]
-collision_mask = 60
+collision_mask = 28
+slide_on_ceiling = false
 script = ExtResource("1_g2els")
 metadata/_edit_group_ = true
 
 [node name="Mesh" parent="." instance=ExtResource("1_3vyb7")]
 
-[node name="Collision" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.28296)
-shape = SubResource("BoxShape3D_g2els")
-
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.992461, 0.122562, 0, -0.122562, 0.992461, 0, 2.70102, 7.08279)
 environment = SubResource("Environment_dqkch")
 
-[node name="Crosshair" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, -28.567)
-texture = ExtResource("3_qhqgy")
+[node name="Collision" type="CollisionPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+depth = 2.0
+polygon = PackedVector2Array(0, 3, -5.5, 1.75, -1.5, -3.5, -0.5, -8.5, 0.5, -8.5, 1.5, -3.5, 5.5, 1.75)
 
 [node name="Guns" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.999391, -0.0348995, 0, 0.0348995, 0.999391, 0, 0.376025, -5.09144)
@@ -80,3 +75,21 @@ step = 2.0
 rounded = true
 editable = false
 scrollable = false
+
+[node name="Crosshair" type="TextureRect" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.18, 0.18)
+pivot_offset = Vector2(64, 64)
+texture = ExtResource("3_qhqgy")
+expand_mode = 1
+stretch_mode = 2

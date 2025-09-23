@@ -3,7 +3,7 @@ extends CharacterBody3D
 var is_local_player: bool = false
 var player_id: int = 0
 
-const MOUSE_SENSITIVITY: float = 0.0001
+const MOUSE_SENSITIVITY: float = 0.05
 
 const THROTTLE_SENSITIVITY: float = 0.25
 const MAX_THROTTLE: float = 50.0
@@ -50,7 +50,7 @@ func _send_network_transform() -> void:
 	main_path.rpc("network_update_transform", player_id, global_transform)
 
 func _ready() -> void:
-	var img = preload("res://assets/crosshair2.png").get_image()
+	var img = preload("res://assets/ui/crosshair2.png").get_image()
 	img.resize(32, 32, Image.INTERPOLATE_BILINEAR)
 	DisplayServer.cursor_set_custom_image(img, DisplayServer.CURSOR_ARROW, Vector2(16, 16))
 
@@ -61,7 +61,7 @@ func _input(event: InputEvent) -> void:
 var rot_vector: Vector2 = Vector2.ZERO
 
 var _sync_timer: float = 0.0
-var _sync_interval: float = 0.05
+var _sync_interval: float = 0.02
 
 func _physics_process(delta: float) -> void:
 	if not is_local_player:
@@ -72,6 +72,9 @@ func _physics_process(delta: float) -> void:
 		var screen_center = get_window().size * 0.5
 		if get_viewport().get_visible_rect().has_point(mouse_pos):
 			rot_vector = (mouse_pos - screen_center) * Vector2(-1, -1)
+		var screen_size = get_viewport().get_visible_rect().size
+		rot_vector.x /= screen_size.x
+		rot_vector.y /= screen_size.y
 	
 	var local_right = (quaternion * Vector3.RIGHT).normalized()
 	var local_up = (quaternion * Vector3.UP).normalized()

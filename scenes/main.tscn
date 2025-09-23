@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://ypck5285upfy"]
+[gd_scene load_steps=5 format=3 uid="uid://ypck5285upfy"]
 
 [ext_resource type="Script" uid="uid://6h80g83l7sx0" path="res://scripts/main.gd" id="1_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://b8plt5tqj7bje" path="res://scenes/airfield.tscn" id="2_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://bxl7fugdldugv" path="res://scenes/collectable.tscn" id="3_sugp2"]
+[ext_resource type="PackedScene" uid="uid://d1jfb1h205p12" path="res://scenes/asteroid.tscn" id="4_jyhfs"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_jyhfs")
@@ -37,3 +38,6 @@ transform = Transform3D(-0.36321, -0.930864, 0.0396475, -0.768679, 0.323432, 0.5
 
 [node name="Collectable8" parent="." instance=ExtResource("3_sugp2")]
 transform = Transform3D(0.314412, -0.871423, -0.376521, -0.789894, -0.46015, 0.405376, -0.526509, 0.169957, -0.833008, 42.6928, 37.237, 31.8742)
+
+[node name="Asteroid" parent="." instance=ExtResource("4_jyhfs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.034233, 11.757266, -35.935448)

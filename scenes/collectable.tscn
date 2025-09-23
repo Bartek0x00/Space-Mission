@@ -16,8 +16,9 @@ material = SubResource("StandardMaterial3D_ti8a4")
 [node name="Collectable" type="RigidBody3D"]
 collision_layer = 32
 collision_mask = 49
+continuous_cd = true
 contact_monitor = true
-max_contacts_reported = 4
+max_contacts_reported = 8
 script = ExtResource("1_ti8a4")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
