@@ -2,6 +2,7 @@ extends CharacterBody3D
 
 var is_local_player: bool = false
 var player_id: int = 0
+var nickname: String = "Player"
 
 const MOUSE_SENSITIVITY: float = 0.05
 
@@ -31,6 +32,8 @@ func shoot_bullets() -> void:
 		last_shot_time = now
 
 func add_score(value: int) -> void:
+	if not is_local_player:
+		return
 	score += value
 	if score != _last_score:
 		$UI/Score.text = "Score: " + str(score)
@@ -50,11 +53,17 @@ func _send_network_transform() -> void:
 	main_path.rpc("network_update_transform", player_id, global_transform)
 
 func _ready() -> void:
+	if not is_local_player:
+		return
 	var img = preload("res://assets/ui/crosshair2.png").get_image()
 	img.resize(32, 32, Image.INTERPOLATE_BILINEAR)
 	DisplayServer.cursor_set_custom_image(img, DisplayServer.CURSOR_ARROW, Vector2(16, 16))
+	$UI/Nickname.text = nickname
+	$NickNameTag.text = nickname
 
-func _input(event: InputEvent) -> void:	
+func _input(event: InputEvent) -> void:
+	if not is_local_player:
+		return
 	if event.is_action_released("shoot"):
 		shoot_bullets()
 

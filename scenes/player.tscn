@@ -1,20 +1,18 @@
-[gd_scene load_steps=8 format=3 uid="uid://wkq5kgabux7s"]
+[gd_scene load_steps=7 format=3 uid="uid://wkq5kgabux7s"]
 
 [ext_resource type="PackedScene" uid="uid://bduivf6jksy8l" path="res://assets/player.gltf" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://bws1ajo4ln3nm" path="res://scripts/player.gd" id="1_g2els"]
-[ext_resource type="Texture2D" uid="uid://dx6b8gilf2tu7" path="res://assets/environment.png" id="3_dqkch"]
 [ext_resource type="Texture2D" uid="uid://cddsj5e431p5r" path="res://assets/ui/crosshair1.png" id="3_qhqgy"]
 
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qlg0r"]
-panorama = ExtResource("3_dqkch")
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_qhqgy"]
 
 [sub_resource type="Sky" id="Sky_qhqgy"]
-sky_material = SubResource("PanoramaSkyMaterial_qlg0r")
+sky_material = SubResource("PhysicalSkyMaterial_qhqgy")
 
 [sub_resource type="Environment" id="Environment_dqkch"]
 background_mode = 2
 sky = SubResource("Sky_qhqgy")
-ambient_light_source = 3
+ambient_light_color = Color(0.47, 0.47, 0.47, 1)
 
 [node name="Player" type="CharacterBody3D" groups=["player"]]
 collision_mask = 28
@@ -57,6 +55,13 @@ offset_bottom = 19.32
 theme_override_font_sizes/font_size = 34
 text = "Score: 0"
 
+[node name="Nickname" type="Label" parent="UI"]
+offset_left = 16.0
+offset_top = 71.0
+offset_right = 56.0
+offset_bottom = 94.0
+theme_override_font_sizes/font_size = 34
+
 [node name="Throttle" type="VSlider" parent="UI"]
 anchors_preset = -1
 anchor_left = 0.924
@@ -93,3 +98,10 @@ pivot_offset = Vector2(64, 64)
 texture = ExtResource("3_qhqgy")
 expand_mode = 1
 stretch_mode = 2
+
+[node name="NickNameTag" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.658929, -0.029632926)
+visible = false
+billboard = 1
+text = "Player"
+font_size = 120
