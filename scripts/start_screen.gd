@@ -2,7 +2,7 @@ extends Control
 
 const PORT: int = 12345
 var ip_addr: String = "127.0.0.1"
-var nickname: String = "Player"
+var nickname: String = ""
 
 var packed_main: PackedScene = preload("res://scenes/main.tscn")
 
