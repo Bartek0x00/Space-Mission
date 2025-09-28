@@ -10,9 +10,9 @@ func _ready() -> void:
 		randf() * 2 - 1
 	) * randf() * MAX_ROTATION_SPEED
 
-
-
 func _on_body_entered(body: Node) -> void:
+	queue_free()
 	if body.is_in_group("player"):
-		body.add_score(SCORE)
-		queue_free()
+		if not body.is_local:
+			return
+		get_node("/root/Main").rpc_id(1, "server_add_score", body.multiplayer.get_unique_id(), SCORE)

@@ -4,14 +4,14 @@ var is_local: bool = false
 var nickname: String = "Player"
 
 const MOUSE_SENSITIVITY: float = 0.05
-const THROTTLE_SENSITIVITY: float = 0.25
+const THROTTLE_SENSITIVITY: float = 0.5
 const MAX_THROTTLE: float = 50.0
 const ROTATION_SENSITIVITY: float = 0.01
 
 var throttle: float = 0.0
 
 const SHOOT_COOLDOWN: float = 0.4
-@export var bullet_scene: PackedScene = preload("res://scenes/bullet.tscn")
+var bullet_scene: PackedScene = preload("res://scenes/bullet.tscn")
 @export var bullet_cooldown: float
 var last_shot_time: float = -1.0
 
@@ -98,14 +98,18 @@ func _physics_process(delta: float) -> void:
 		get_parent().rpc_id(1, "server_sync_player", multiplayer.get_unique_id(), snapshot)
 
 @rpc("authority", "call_local", "reliable")
+func client_request_nickname() -> void:
+	get_parent().rpc_id(1, "server_sync_nickname", multiplayer.get_unique_id(), nickname)
+
+@rpc("authority", "call_local", "reliable")
 func client_sync_nickname(peer_id: int, new_nickname: String) -> void:
 	if peer_id == multiplayer.get_unique_id():
 		return
-	print("Sync \"%s\" for %d on %d" % [new_nickname, peer_id, multiplayer.get_unique_id()])
-	var tmp_players = get_parent().players
-	if not tmp_players.has(peer_id):
+	if not get_parent().players.has(peer_id):
 		return
-	tmp_players[peer_id].nickname = new_nickname
+	get_parent().players[peer_id].nickname = new_nickname
+	get_parent().players[peer_id].get_node("NickNameTag").text = new_nickname
+	redraw_scoreboard()
 
 @rpc("authority", "call_local", "unreliable_ordered")
 func client_sync_player(peer_id: int, state: Dictionary) -> void:
@@ -118,17 +122,10 @@ func client_sync_player(peer_id: int, state: Dictionary) -> void:
 	tmp_players[peer_id].quaternion = state["q"]
 	tmp_players[peer_id].velocity = state["v"]
 
-func add_score(value: int) -> void:
-	if not is_local:
-		return
-	
-	if get_node_or_null("/root/Main") == null:
-		return
-	
-	if multiplayer.multiplayer_peer == null:
-		return
-	
-	#rpc_id(1, "server_add_score", player_id, value)
+@rpc("authority", "call_local", "reliable")
+func client_set_score(peer_id: int, new_value: int) -> void:
+	get_parent().players[peer_id].score = new_value
+	redraw_scoreboard()
 
 func shoot_bullets() -> void:
 	if not is_local:
@@ -136,23 +133,19 @@ func shoot_bullets() -> void:
 	
 	var now = Time.get_ticks_msec() / 1000.0
 	if now - last_shot_time >= SHOOT_COOLDOWN:
-		if get_node_or_null("/root/Main") == null:
-			return
-		
-		if multiplayer.multiplayer_peer == null:
-			return
-		
 		for gun in $Guns.get_children():
-			pass
-			#rpc_id(1, "server_request_shoot", player_id, gun.global_transform)
+			get_parent().rpc_id(1, "server_spawn_bullet", multiplayer.get_unique_id(), gun.global_transform)
 		last_shot_time = now
 
-func _on_nickname_set(new_name: String) -> void:
-	nickname = new_name
-	$UI/Nickname.text = nickname
-	$NickNameTag.text = nickname
-
-func _on_score_updated(new_score: int) -> void:
-	score = new_score
-	if is_local:
-		$UI/Score.text = "Score: %s" % str(score)
+func redraw_scoreboard() -> void:
+	if not is_local:
+		return
+	for label in $UI/ScoreBoard.get_children():
+		label.queue_free()
+	
+	var list = get_parent().players.values()
+	list.sort_custom(func (a, b): return a.score > b.score)
+	for player in list:
+		var label = Label.new()
+		label.text = "%s: %d" % [player.nickname, player.score]
+		$UI/ScoreBoard.add_child(label)

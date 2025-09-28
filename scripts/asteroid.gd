@@ -13,15 +13,15 @@ func resize(ratio: float) -> void:
 
 func _ready() -> void:
 	linear_velocity.z = randf() * MULTIPLIER
-	#angular_velocity = get_random_vec3(MULTIPLIER / 4)
+	angular_velocity = get_random_vec3(1.0)
 
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group("bullet"):
 		return
 	if stage > 0:
-		for i in range((randi() % 3) + 1):
+		for i in range(1):
 			var asteroid = asteroid_scene.instantiate()
-			get_node("/root/Main").add_child(asteroid)
+			get_node("/root/Main/MapObjects/Asteroids").add_child(asteroid)
 			asteroid.global_position = global_position + get_random_vec3(2.0)
 			asteroid.resize(0.5)
 			asteroid.stage = stage - 1

@@ -50,8 +50,10 @@ func _on_peer_connected(peer_id: int) -> void:
 	for id in players.keys():
 		if id == peer_id:
 			continue
+		rpc_id(id, "spawn_player", peer_id, false)
 		rpc_id(peer_id, "spawn_player", id, false)
-	rpc("spawn_player", peer_id, false)
+		players[peer_id].rpc_id(peer_id, "client_set_score", id, players[id].score)
+	players[peer_id].rpc_id(peer_id, "client_request_nickname")
 
 func _on_peer_disconnected(peer_id: int) -> void:
 	assert(multiplayer.is_server())
@@ -73,6 +75,7 @@ func spawn_player(peer_id: int, is_local: bool) -> void:
 	add_child(player)
 	player.global_position = Vector3(0, 8, 0)
 	players[peer_id] = player
+	players[multiplayer.get_unique_id()].redraw_scoreboard()
 
 @rpc("authority", "call_local", "reliable")
 func despawn_player(peer_id: int) -> void:
@@ -80,13 +83,7 @@ func despawn_player(peer_id: int) -> void:
 		return
 	players[peer_id].queue_free()
 	players.erase(peer_id)
-
-@rpc("any_peer", "call_local", "reliable")
-func server_sync_nickname(peer_id: int, new_nickname: String) -> void:
-	if not players.has(peer_id):
-		return
-	for id in players.keys():
-		players[id].rpc_id(id, "client_sync_nickname", peer_id, new_nickname)
+	players[multiplayer.get_unique_id()].redraw_scoreboard()
 
 @rpc("any_peer", "call_local", "unreliable_ordered")
 func server_sync_player(peer_id: int, state: Dictionary) -> void:
@@ -94,54 +91,33 @@ func server_sync_player(peer_id: int, state: Dictionary) -> void:
 		return
 	players[peer_id].rpc("client_sync_player", peer_id, state)
 
-@rpc("any_peer", "unreliable")
-func network_update_transform(peer_id: int, xform: Transform3D) -> void:
-	if peer_id == multiplayer.get_unique_id():
-		return
-	
-	if not players.has(peer_id):
-		var remote = player_scene.instantiate()
-		remote.is_local_player = false
-		remote.player_id = peer_id
-		remote.get_node("NickNameTag").visible = true
-		add_child(remote)
-		players[peer_id] = remote
-	players[peer_id].global_transform = xform
+@rpc("any_peer", "call_local", "reliable")
+func server_sync_nickname(peer_id: int, new_nickname: String) -> void:
+	if players.has(peer_id):
+		players[peer_id].nickname = new_nickname
+	for id in players.keys():
+		players[peer_id].rpc_id(peer_id, "client_sync_nickname", id, players[id].nickname)
+		players[id].rpc_id(id, "client_sync_nickname", peer_id, new_nickname)
 
-@rpc("authority")
+@rpc("any_peer", "call_local", "reliable")
 func server_add_score(peer_id: int, value: int) -> void:
-	if not multiplayer.is_server():
-		return
-	
 	if not players.has(peer_id):
 		return
-	
-	players[peer_id].score += value
-	var new_score = players[peer_id].score
-	rpc("update_score", peer_id, new_score)
+	var new_score = players[peer_id].score + value
+	for id in players.keys():
+		players[id].rpc_id(id, "client_set_score", peer_id, new_score)
 
-@rpc("any_peer", "call_local")
-func update_score(peer_id: int, new_score: int) -> void:
-	if not players.has(peer_id):
-		return
-	
-	players[peer_id].score = new_score
-	if players[peer_id].has_method("_on_score_updated"):
-		players[peer_id]._on_score_updated(new_score)
+@rpc("any_peer", "call_local", "reliable")
+func server_spawn_bullet(peer_id: int, gun_transform: Transform3D) -> void:
+	rpc("spawn_bullet", peer_id, gun_transform)
 
-@rpc("authority")
-func server_request_shoot(player_id: int, gun_transform: Transform3D) -> void:
-	if not multiplayer.is_server():
-		return
-	rpc("spawn_bullet", player_id, gun_transform)
-
-@rpc("any_peer", "call_local", "unreliable")
-func spawn_bullet(_player_id: int, gun_transform: Transform3D) -> void:
+@rpc("authority", "call_local", "unreliable")
+func spawn_bullet(peer_id: int, gun_transform: Transform3D) -> void:
 	if bullet_scene == null:
 		return
 	
 	var bullet = bullet_scene.instantiate()
+	bullet.player_id = peer_id
 	add_child(bullet)
 	bullet.global_transform = gun_transform
-	if "linear_velocity" in bullet:
-		bullet.linear_velocity = -bullet.transform.basis.z * bullet.SPEED
+	bullet.linear_velocity = -bullet.transform.basis.z * bullet.SPEED
