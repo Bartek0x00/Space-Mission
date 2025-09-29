@@ -4,10 +4,14 @@ var players: Dictionary = {}
 
 var local_nickname: String = "Player_1"
 
-var player_scene: PackedScene = preload("res://scenes/player.tscn")
-var bullet_scene: PackedScene = preload("res://scenes/bullet.tscn")
-var failure_scene: PackedScene = preload("res://scenes/connection_failed.tscn")
-var waiting_scene: PackedScene = preload("res://scenes/waiting.tscn")
+const SCENES: Dictionary = {
+	"Player": preload("res://scenes/player.tscn"),
+	"Collectable": preload("res://scenes/collectable.tscn"),
+	"Asteroid": preload("res://scenes/asteroid.tscn"),
+	"Bullet": preload("res://scenes/bullet.tscn"),
+	"Failure": preload("res://scenes/connection_failed.tscn"),
+	"Waiting": preload("res://scenes/waiting.tscn")
+}
 
 func init_server(port: int, nickname: String) -> void:
 	var peer = ENetMultiplayerPeer.new()
@@ -26,7 +30,7 @@ func init_server(port: int, nickname: String) -> void:
 	spawn_player(1, true)
 
 func init_client(addr: String, port: int, nickname: String) -> void:
-	get_tree().change_scene_to_packed(waiting_scene)
+	get_tree().change_scene_to_packed(SCENES["Waiting"])
 	var peer = ENetMultiplayerPeer.new()
 	var error = peer.create_client(addr, port)
 	if error != OK:
@@ -60,14 +64,14 @@ func _on_peer_disconnected(peer_id: int) -> void:
 	rpc("despawn_player", peer_id)
 
 func _on_server_disconnected() -> void:
-	get_tree().change_scene_to_packed(failure_scene)
+	get_tree().change_scene_to_packed(SCENES["Failure"])
 	queue_free()
 
 @rpc("authority", "call_local", "reliable")
 func spawn_player(peer_id: int, is_local: bool) -> void:
 	if players.has(peer_id):
 		return
-	var player = player_scene.instantiate()
+	var player = SCENES["Player"].instantiate()
 	player.name = "Player_%d" % peer_id
 	player.is_local = is_local
 	if is_local:
@@ -113,10 +117,7 @@ func server_spawn_bullet(peer_id: int, gun_transform: Transform3D) -> void:
 
 @rpc("authority", "call_local", "unreliable")
 func spawn_bullet(peer_id: int, gun_transform: Transform3D) -> void:
-	if bullet_scene == null:
-		return
-	
-	var bullet = bullet_scene.instantiate()
+	var bullet = SCENES["Bullet"].instantiate()
 	bullet.player_id = peer_id
 	add_child(bullet)
 	bullet.global_transform = gun_transform
