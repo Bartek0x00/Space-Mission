@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://c1b4gh42gbbme"]
+
+[ext_resource type="Curve3D" uid="uid://dbnoabeju5clo" path="res://assets/ellipse_curve.tres" id="1_fw00r"]
+
+[node name="EnemyPath" type="Path3D"]
+curve = ExtResource("1_fw00r")
+
+[node name="EnemyPathFollow" type="PathFollow3D" parent="."]
+transform = Transform3D(0.25881907, -0.9659255, 2.2626681e-08, 0.9659258, 0.25881898, 8.444391e-08, -8.742278e-08, 0, 0.99999994, 100, 0, 0)
+use_model_front = true

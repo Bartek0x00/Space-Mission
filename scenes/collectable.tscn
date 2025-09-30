@@ -1,14 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://bxl7fugdldugv"]
+[gd_scene load_steps=8 format=3 uid="uid://bxl7fugdldugv"]
 
 [ext_resource type="Script" uid="uid://wb6pa58votu3" path="res://scripts/collectable.gd" id="1_ti8a4"]
+[ext_resource type="Texture2D" uid="uid://dvyple6cjalf4" path="res://assets/scrap/scrap_Albedo.jpg" id="2_i8gcc"]
+[ext_resource type="Texture2D" uid="uid://dmifsgc7wmjpc" path="res://assets/scrap/scrap_Control.jpg" id="3_ftjwp"]
+[ext_resource type="Texture2D" uid="uid://dimxpjmoeuuh6" path="res://assets/scrap/scrap_Normal.png" id="4_cy7d5"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_llqga"]
 radius = 1.75
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ti8a4"]
-albedo_color = Color(0.54, 0.54, 0.54, 1)
+albedo_texture = ExtResource("2_i8gcc")
 metallic = 1.0
-roughness = 0.3
+metallic_texture = ExtResource("3_ftjwp")
+metallic_texture_channel = 1
+roughness_texture = ExtResource("3_ftjwp")
+normal_enabled = true
+normal_texture = ExtResource("4_cy7d5")
 
 [sub_resource type="BoxMesh" id="BoxMesh_llfh3"]
 material = SubResource("StandardMaterial3D_ti8a4")

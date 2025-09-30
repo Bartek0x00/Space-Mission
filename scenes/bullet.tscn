@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://25nsq23mqj57"]
+[gd_scene load_steps=5 format=3 uid="uid://25nsq23mqj57"]
 
 [ext_resource type="Script" uid="uid://8ln4aj57xhgr" path="res://scripts/bullet.gd" id="1_mkf8s"]
 
@@ -19,21 +19,9 @@ is_hemisphere = true
 radius = 0.1
 height = 0.25
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mkf8s"]
-albedo_color = Color(1, 0.4, 0, 1)
-roughness = 0.1
-emission_enabled = true
-emission = Color(1, 0.4, 0, 1)
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_mkf8s"]
-gravity = Vector3(0, 0, 0)
-scale_min = 0.05
-scale_max = 0.1
-
-[sub_resource type="SphereMesh" id="SphereMesh_y25gk"]
-
 [node name="Bullet" type="RigidBody3D" groups=["bullet"]]
 collision_mask = 65
+can_sleep = false
 continuous_cd = true
 contact_monitor = true
 max_contacts_reported = 4
@@ -49,14 +37,5 @@ mesh = SubResource("SphereMesh_mkf8s")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, 1, 0, -0.00935087, 0.00723504, 0.0238898)
 rotation_edit_mode = 2
 shape = SubResource("CapsuleShape3D_y25gk")
-
-[node name="CPUParticles3D" type="GPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.16163)
-material_override = SubResource("StandardMaterial3D_mkf8s")
-amount = 32
-fixed_fps = 0
-trail_enabled = true
-process_material = SubResource("ParticleProcessMaterial_mkf8s")
-draw_pass_1 = SubResource("SphereMesh_y25gk")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

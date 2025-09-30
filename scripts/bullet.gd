@@ -1,6 +1,6 @@
 extends RigidBody3D
 
-@export var SPEED: float = 30.0
+@export var SPEED: float = 60.0
 @export var TIMEOUT: float = 4.0
 
 var player_id: int
