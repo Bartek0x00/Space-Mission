@@ -10,7 +10,8 @@ const SCENES: Dictionary = {
 	"Asteroid": preload("res://scenes/asteroid.tscn"),
 	"Bullet": preload("res://scenes/bullet.tscn"),
 	"Failure": preload("res://scenes/connection_failed.tscn"),
-	"Waiting": preload("res://scenes/waiting.tscn")
+	"Waiting": preload("res://scenes/waiting.tscn"),
+	"Planet": preload("res://scenes/planet.tscn")
 }
 
 func init_server(port: int, nickname: String) -> void:

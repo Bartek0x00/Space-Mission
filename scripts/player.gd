@@ -17,6 +17,9 @@ var last_shot_time: float = -1.0
 
 var score: int = 0
 
+var global_seed: int = 123456789
+var last_chunk: Vector3i = Vector3i(1 << 30, 1 << 30, 1 << 30)
+
 var rot_vector: Vector2 = Vector2.ZERO
 
 var _sync_timer: float = 0.0
@@ -96,6 +99,11 @@ func _physics_process(delta: float) -> void:
 			"v": velocity
 		}
 		get_parent().rpc_id(1, "server_sync_player", multiplayer.get_unique_id(), snapshot)
+	
+	var current_chunk = get_parent().get_node("ChunkManager").get_chunk_coords(global_transform.origin)
+	if current_chunk != last_chunk:
+		get_parent().get_node("ChunkManager").generate_chunk(global_seed, global_transform.origin)
+		last_chunk = current_chunk
 
 @rpc("authority", "call_local", "reliable")
 func client_request_nickname() -> void:

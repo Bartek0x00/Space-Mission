@@ -1,28 +1,27 @@
 extends RigidBody3D
 
-const MULTIPLIER: float = 20.0
 @export var stage: int = 2
 @export var asteroid_scene: PackedScene = preload("res://scenes/asteroid.tscn")
-
-func get_random_vec3(max_val: float) -> Vector3:
-	return Vector3(randf() * max_val, randf() * max_val, randf() * max_val) * max_val
 
 func resize(ratio: float) -> void:
 	$Mesh.scale *= ratio
 	$Collision.shape.radius *= ratio
 
-func _ready() -> void:
-	linear_velocity.z = randf() * MULTIPLIER
-	angular_velocity = get_random_vec3(1.0)
-
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group("bullet"):
 		return
+
 	if stage > 0:
-		for i in range(1):
+		var hit_dir = (global_position - body.global_position).normalized()
+		var perp = Vector3(-hit_dir.y, hit_dir.x, hit_dir.z)
+
+		for offset in [-1, 1]:
 			var asteroid = asteroid_scene.instantiate()
-			get_node("/root/Main/MapObjects/Asteroids").add_child(asteroid)
-			asteroid.global_position = global_position + get_random_vec3(2.0)
+			get_parent().add_child(asteroid)
+			
 			asteroid.resize(0.5)
 			asteroid.stage = stage - 1
+			
+			asteroid.global_position = global_position + perp * offset
+			asteroid.linear_velocity = linear_velocity + perp * (2 * offset)
 	queue_free()

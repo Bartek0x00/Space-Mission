@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://buxfnppma0dcn"]
+
+[ext_resource type="Script" uid="uid://ku852bejcemh" path="res://scripts/planet.gd" id="1_cktii"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_ggt7d"]
+radius = 16.0
+height = 32.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0k1rn"]
+radius = 16.0
+
+[node name="Planet" type="StaticBody3D"]
+script = ExtResource("1_cktii")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_ggt7d")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_0k1rn")
