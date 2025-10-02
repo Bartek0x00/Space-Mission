@@ -46,6 +46,10 @@ func init_client(addr: String, port: int, nickname: String) -> void:
 	else:
 		local_nickname = "Player_%d" % peer.get_unique_id()
 
+func remove() -> void:
+	multiplayer.multiplayer_peer = null
+	queue_free()
+
 func _on_connected_to_server() -> void:
 	get_node("/root/Waiting").queue_free()
 
@@ -58,6 +62,7 @@ func _on_peer_connected(peer_id: int) -> void:
 		rpc_id(id, "spawn_player", peer_id, false)
 		rpc_id(peer_id, "spawn_player", id, false)
 		players[peer_id].rpc_id(peer_id, "client_set_score", id, players[id].score)
+		players[peer_id].rpc_id(peer_id, "client_set_health", id, players[id].health)
 	players[peer_id].rpc_id(peer_id, "client_request_nickname")
 
 func _on_peer_disconnected(peer_id: int) -> void:
@@ -111,6 +116,14 @@ func server_add_score(peer_id: int, value: int) -> void:
 	var new_score = players[peer_id].score + value
 	for id in players.keys():
 		players[id].rpc_id(id, "client_set_score", peer_id, new_score)
+
+@rpc("any_peer", "call_local", "reliable")
+func server_sub_health(peer_id: int, value: int) -> void:
+	if not players.has(peer_id):
+		return
+	var new_health = players[peer_id].health - value
+	for id in players.keys():
+		players[id].rpc_id(id, "client_set_health", peer_id, new_health)
 
 @rpc("any_peer", "call_local", "reliable")
 func server_spawn_bullet(peer_id: int, gun_transform: Transform3D) -> void:

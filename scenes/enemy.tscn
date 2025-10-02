@@ -4,15 +4,19 @@
 [ext_resource type="PackedScene" uid="uid://d2tshxa5a01pa" path="res://assets/enemy.gltf" id="2_4ra3w"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_5uy6h"]
-radius = 2.0
+radius = 2.5
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_md0e3"]
 height = 35.0
 radius = 6.0
 
 [node name="Enemy" type="RigidBody3D"]
+collision_layer = 4
+collision_mask = 115
+continuous_cd = true
+contact_monitor = true
+max_contacts_reported = 8
 script = ExtResource("1_md0e3")
-speed = 10.0
 metadata/_edit_group_ = true
 
 [node name="Mesh" parent="." instance=ExtResource("2_4ra3w")]
@@ -27,5 +31,6 @@ shape = SubResource("SphereShape3D_5uy6h")
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 20)
 shape = SubResource("CylinderShape3D_md0e3")
 
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="body_entered" from="RangeCone" to="." method="_on_range_cone_body_entered"]
 [connection signal="body_exited" from="RangeCone" to="." method="_on_range_cone_body_exited"]

@@ -9,8 +9,11 @@ enum Mode {
 var target: Node3D = null
 var mode: Mode = Mode.PATROL
 
-@export var speed: float = 5.0
-@export var rotation_speed: float = 5.0
+const DAMAGE: int = 20
+
+const SPEED: float = 5.0
+const ROTATION_SPEED: float = 5.0
+
 var path_follow: PathFollow3D
 
 func _ready() -> void:
@@ -39,18 +42,18 @@ func _on_range_cone_body_exited(body: Node3D) -> void:
 	mode = Mode.RETURN
 
 func _patrol(delta: float) -> void:
-	path_follow.progress += speed * delta
+	path_follow.progress += SPEED * delta
 	var dir = (path_follow.global_transform.origin - global_transform.origin)
 	if dir.length() > 0.1:
 		dir = dir.normalized()
-		linear_velocity = dir * speed
+		linear_velocity = dir * SPEED
 		_rotate_towards(path_follow.global_transform.basis, delta)
 
 func _follow(delta: float) -> void:
 	var dir = (target.global_transform.origin - global_transform.origin)
 	if dir.length() > 0.1:
 		dir = dir.normalized()
-		linear_velocity = dir * speed
+		linear_velocity = dir * SPEED
 		var from = Transform3D(global_transform.basis, global_transform.origin)
 		var target_basis = from.looking_at(target.global_transform.origin, Vector3.UP, true).basis
 		_rotate_towards(target_basis, delta)
@@ -59,7 +62,7 @@ func _return(delta: float) -> void:
 	var dir = (path_follow.global_transform.origin - global_transform.origin)
 	if dir.length() > 0.1:
 		dir = dir.normalized()
-		linear_velocity = dir * speed
+		linear_velocity = dir * SPEED
 		_rotate_towards(path_follow.global_transform.basis, delta)
 	else:
 		mode = Mode.PATROL
@@ -67,6 +70,14 @@ func _return(delta: float) -> void:
 func _rotate_towards(target_basis: Basis, delta: float) -> void:
 	var current_q = global_transform.basis.get_rotation_quaternion()
 	var target_q = target_basis.get_rotation_quaternion()
-	var rot = current_q.slerp(target_q, rotation_speed * delta)
+	var rot = current_q.slerp(target_q, ROTATION_SPEED * delta)
 	var angular = (rot * current_q.inverse()).get_euler()
 	angular_velocity = angular / delta
+
+func _on_body_entered(body: Node) -> void:
+	if not body.is_in_group("player"):
+		return
+	if not body.is_local:
+		return
+	get_node("/root/Main").rpc_id(1, "server_sub_health", body.multiplayer.get_unique_id(), DAMAGE)
+	queue_free()

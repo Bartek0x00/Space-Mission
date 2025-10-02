@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://wkq5kgabux7s"]
+[gd_scene load_steps=15 format=3 uid="uid://wkq5kgabux7s"]
 
 [ext_resource type="Script" uid="uid://bws1ajo4ln3nm" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://dx6b8gilf2tu7" path="res://assets/environment.png" id="3_dqkch"]
 [ext_resource type="Texture2D" uid="uid://cddsj5e431p5r" path="res://assets/ui/crosshair1.png" id="3_qhqgy"]
 [ext_resource type="PackedScene" uid="uid://cfi6gugp51m7u" path="res://scenes/fighter.tscn" id="4_dqkch"]
+[ext_resource type="Texture2D" uid="uid://b2ws8d6tds5af" path="res://assets/ui/throttle.png" id="4_tuyoq"]
+[ext_resource type="PackedScene" uid="uid://osopme8d5is5" path="res://scenes/pause_menu.tscn" id="5_qlg0r"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qlg0r"]
 panorama = ExtResource("3_dqkch")
@@ -15,6 +17,52 @@ sky_material = SubResource("PanoramaSkyMaterial_qlg0r")
 background_mode = 2
 sky = SubResource("Sky_qhqgy")
 ambient_light_color = Color(0.47, 0.47, 0.47, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fjrip"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0, 0, 0.64705884)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_smehm"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0.6591482, 0, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qlg0r"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.6)
+corner_detail = 6
+expand_margin_left = 10.0
+expand_margin_right = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tuyoq"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.3, 0.3, 0.3, 0.4)
+corner_detail = 6
+expand_margin_left = 8.0
+expand_margin_right = 8.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fjrip"]
 
 [node name="Player" type="CharacterBody3D" groups=["player"]]
 collision_mask = 93
@@ -31,7 +79,7 @@ environment = SubResource("Environment_dqkch")
 
 [node name="Collision" type="CollisionPolygon3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.1, 0)
-depth = 1.2
+depth = 1.5
 polygon = PackedVector2Array(-1.75, 2.4, -2.7, 1.6, -2.75, -0.2, -1.5, -1.4, -0.5, -6, 0.5, -6, 1.5, -1.4, 2.75, -0.2, 2.7, 1.6, 1.75, 2.4)
 
 [node name="Guns" type="Node3D" parent="."]
@@ -49,6 +97,38 @@ offset_right = 70.0
 offset_bottom = 77.0
 theme_override_font_sizes/font_size = 28
 
+[node name="HealthBar" type="ProgressBar" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -256.0
+offset_top = 30.0
+offset_right = 256.0
+offset_bottom = 76.0
+grow_horizontal = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_fjrip")
+theme_override_styles/fill = SubResource("StyleBoxFlat_smehm")
+step = 1.0
+value = 100.0
+rounded = true
+show_percentage = false
+
+[node name="Label" type="Label" parent="UI/HealthBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 28
+text = "100 HP"
+
 [node name="Throttle" type="VSlider" parent="UI"]
 anchors_preset = -1
 anchor_left = 0.924
@@ -62,6 +142,13 @@ offset_bottom = 122.576
 grow_horizontal = 0
 grow_vertical = 2
 size_flags_horizontal = 8
+theme_override_constants/center_grabber = 1
+theme_override_icons/grabber = ExtResource("4_tuyoq")
+theme_override_icons/grabber_highlight = ExtResource("4_tuyoq")
+theme_override_icons/grabber_disabled = ExtResource("4_tuyoq")
+theme_override_styles/slider = SubResource("StyleBoxFlat_qlg0r")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_tuyoq")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxEmpty_fjrip")
 max_value = 50.0
 step = 0.5
 rounded = true
@@ -95,6 +182,9 @@ offset_top = 32.0
 offset_right = -32.0
 offset_bottom = 72.0
 grow_horizontal = 0
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("5_qlg0r")]
+visible = false
 
 [node name="NickNameTag" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.658929, -0.029632926)

@@ -2,22 +2,20 @@
 
 [ext_resource type="Script" uid="uid://8ln4aj57xhgr" path="res://scripts/bullet.gd" id="1_mkf8s"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h1aey"]
-albedo_color = Color(1, 0.7305, 0.23, 1)
-metallic = 0.55
-roughness = 0.39
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mkf8s"]
+albedo_color = Color(0, 0, 0, 1)
+emission_enabled = true
+emission = Color(1, 0.7, 0, 1)
+emission_energy_multiplier = 3.0
 
-[sub_resource type="SphereMesh" id="SphereMesh_mkf8s"]
-material = SubResource("StandardMaterial3D_h1aey")
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_y25gk"]
+material = SubResource("StandardMaterial3D_mkf8s")
 radius = 0.1
-height = 0.2
-radial_segments = 32
-rings = 16
-is_hemisphere = true
+height = 0.4
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_y25gk"]
 radius = 0.1
-height = 0.25
+height = 0.4
 
 [node name="Bullet" type="RigidBody3D" groups=["bullet"]]
 collision_mask = 65
@@ -29,13 +27,11 @@ script = ExtResource("1_mkf8s")
 metadata/_edit_group_ = true
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.1)
-rotation_edit_mode = 2
-mesh = SubResource("SphereMesh_mkf8s")
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_y25gk")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, 1, 0, -0.00935087, 0.00723504, 0.0238898)
-rotation_edit_mode = 2
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 shape = SubResource("CapsuleShape3D_y25gk")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

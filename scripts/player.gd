@@ -16,6 +16,7 @@ var bullet_scene: PackedScene = preload("res://scenes/bullet.tscn")
 var last_shot_time: float = -1.0
 
 var score: int = 0
+var health: int = 100
 
 var global_seed: int = 123456789
 var last_chunk: Vector3i = Vector3i(1 << 30, 1 << 30, 1 << 30)
@@ -24,6 +25,8 @@ var rot_vector: Vector2 = Vector2.ZERO
 
 var _sync_timer: float = 0.0
 var _sync_interval: float = 0.020
+
+var is_paused: bool = false
 
 func _ready() -> void:
 	if is_local:
@@ -45,12 +48,21 @@ func _on_tree_exiting() -> void:
 func _input(event: InputEvent) -> void:
 	if not is_local:
 		return
+		
+	if event.is_action_pressed("escape"):
+		_toggle_pause_menu()
+	
+	if is_paused:
+		return
 	
 	if event.is_action_released("shoot"):
 		shoot_bullets()
 
+
 func _physics_process(delta: float) -> void:
 	if not is_local:
+		return
+	if is_paused:
 		return
 	
 	if get_window().has_focus():
@@ -74,7 +86,10 @@ func _physics_process(delta: float) -> void:
 		quaternion = Quaternion(local_forward, -ROTATION_SENSITIVITY) * quaternion
 	if Input.is_action_pressed("ui_right"):
 		quaternion = Quaternion(local_forward, ROTATION_SENSITIVITY) * quaternion
-	
+	if Input.is_action_pressed("yaw_left"):
+		quaternion = Quaternion(local_up, ROTATION_SENSITIVITY) * quaternion
+	if Input.is_action_pressed("yaw_right"):
+		quaternion = Quaternion(local_up, -ROTATION_SENSITIVITY) * quaternion
 	quaternion = quaternion.normalized()
 	
 	if Input.is_action_pressed("throttle_down"):
@@ -93,7 +108,6 @@ func _physics_process(delta: float) -> void:
 	if _sync_timer >= _sync_interval:
 		_sync_timer = 0.0
 		var snapshot = {
-			"t": Time.get_ticks_msec(),
 			"p": global_position,
 			"q": quaternion,
 			"v": velocity
@@ -135,6 +149,23 @@ func client_set_score(peer_id: int, new_value: int) -> void:
 	get_parent().players[peer_id].score = new_value
 	redraw_scoreboard()
 
+@rpc("authority", "call_local", "reliable")
+func client_set_health(peer_id: int, new_value: int) -> void:
+	get_parent().players[peer_id].health = new_value
+	if not is_local:
+		return
+	var sb = StyleBoxFlat.new()
+	
+	if new_value >= 60:
+		sb.bg_color = Color.DARK_GREEN
+	elif new_value >= 20:
+		sb.bg_color = Color.YELLOW
+	else:
+		sb.bg_color = Color.RED
+	$UI/HealthBar.add_theme_stylebox_override("fill", sb)
+	$UI/HealthBar.value = new_value
+	$UI/HealthBar/Label.text = "%d HP" % new_value
+
 func shoot_bullets() -> void:
 	if not is_local:
 		return
@@ -157,3 +188,7 @@ func redraw_scoreboard() -> void:
 		var label = Label.new()
 		label.text = "%s: %d" % [player.nickname, player.score]
 		$UI/ScoreBoard.add_child(label)
+
+func _toggle_pause_menu() -> void:
+	$UI/PauseMenu.visible = !$UI/PauseMenu.visible
+	is_paused = !is_paused

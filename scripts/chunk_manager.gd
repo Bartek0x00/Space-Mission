@@ -1,7 +1,7 @@
 extends Node3D
 
 const CHUNK_SIZE: int = 1000
-const VIEW_DISTANCE: int = 2
+const VIEW_DISTANCE: int = 3
 
 const SCENES: Dictionary = {
 	"Collectable": preload("res://scenes/collectable.tscn"),
@@ -51,7 +51,7 @@ func _load_chunk(chunk_coord: Vector3i, global_seed: int) -> void:
 	var rng = _rng_for_chunk(global_seed, chunk_coord.x, chunk_coord.y, chunk_coord.z)
 	
 	_spawn_planets(container, rng, chunk_coord)
-	_spawn_asteroids(container, rng, chunk_coord)
+	#_spawn_asteroids(container, rng, chunk_coord)
 	#_spawn_collectables(container, rng, chunk_coord)
 	#_spawn_enemies(container, rng, chunk_coord)
 
@@ -84,7 +84,7 @@ func _spawn_planets(root_container: Node3D, rng: RandomNumberGenerator, chunk_co
 	container.name = "Planets"
 	root_container.add_child(container)
 	
-	var count = rng.randi_range(1, 4)
+	var count = rng.randi_range(0, 2)
 	for i in range(count):
 		var local = _rand_local_pos_with_padding(rng)
 		var world_pos = _world_pos(chunk_coord, local)
