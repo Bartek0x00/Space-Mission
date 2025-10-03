@@ -4,6 +4,8 @@ var is_local: bool = false
 var nickname: String = "Player"
 
 const MOUSE_SENSITIVITY: float = 0.05
+const ACCEL_SENSITIVITY: float = 0.005
+
 const THROTTLE_SENSITIVITY: float = 0.5
 const MAX_THROTTLE: float = 50.0
 const ROTATION_SENSITIVITY: float = 0.01
@@ -21,7 +23,8 @@ var health: int = 100
 var global_seed: int = 123456789
 var last_chunk: Vector3i = Vector3i(1 << 30, 1 << 30, 1 << 30)
 
-var rot_vector: Vector2 = Vector2.ZERO
+var rot_vector: Vector3 = Vector3.ZERO
+var accel_off: Vector3 = Vector3.ZERO
 
 var _sync_timer: float = 0.0
 var _sync_interval: float = 0.020
@@ -34,7 +37,8 @@ func _ready() -> void:
 		img.resize(32, 32, Image.INTERPOLATE_BILINEAR)
 		DisplayServer.cursor_set_custom_image(img, DisplayServer.CURSOR_ARROW, Vector2(16, 16))
 		get_parent().rpc_id(1, "server_sync_nickname", multiplayer.get_unique_id(), nickname)
-	
+		if OS.has_feature("mobile"):
+			_on_center_accel_pressed()
 	$UI/Nickname.text = nickname
 	$UI.visible = is_local
 	
@@ -64,23 +68,32 @@ func _physics_process(delta: float) -> void:
 		return
 	if is_paused:
 		return
-	
-	if get_window().has_focus():
-		var mouse_pos = get_viewport().get_mouse_position()
-		var screen_center = get_window().size * 0.5
-		if get_viewport().get_visible_rect().has_point(mouse_pos):
-			rot_vector = (mouse_pos - screen_center) * Vector2(-1, -1)
-		var screen_size = get_viewport().get_visible_rect().size
-		rot_vector.x /= screen_size.x
-		rot_vector.y /= screen_size.y
+	if OS.has_feature("mobile"):
+		var accel = Input.get_accelerometer()
+		rot_vector.x = (accel.x - accel_off.x) * ACCEL_SENSITIVITY
+		rot_vector.y = -(accel.y - accel_off.y) * ACCEL_SENSITIVITY
+		rot_vector.z = (accel.z - accel_off.z) * ACCEL_SENSITIVITY
+	else:
+		if get_window().has_focus():
+			var mouse_pos = get_viewport().get_mouse_position()
+			var screen_center = get_window().size * 0.5
+			if get_viewport().get_visible_rect().has_point(mouse_pos):
+				rot_vector = (mouse_pos - screen_center) * Vector2(-1, -1)
+				var screen_size = get_viewport().get_visible_rect().size
+				rot_vector.x = (rot_vector.x * MOUSE_SENSITIVITY) / screen_size.x
+				rot_vector.y = (rot_vector.y * MOUSE_SENSITIVITY) / screen_size.y
 	
 	var local_right = (quaternion * Vector3.RIGHT).normalized()
 	var local_up = (quaternion * Vector3.UP).normalized()
 	var local_forward = (quaternion * Vector3.FORWARD).normalized()
 	
-	quaternion = Quaternion(local_up, rot_vector.x * MOUSE_SENSITIVITY) * quaternion
-	quaternion = Quaternion(local_right, rot_vector.y * MOUSE_SENSITIVITY) * quaternion
-	quaternion = Quaternion(local_forward, -rot_vector.x * 0.00005) * quaternion
+	quaternion = Quaternion(local_up, -rot_vector.y) * quaternion
+	quaternion = Quaternion(local_right, rot_vector.z) * quaternion
+	if OS.has_feature("mobile"):
+		pass
+		quaternion = Quaternion(local_forward, rot_vector.x) * quaternion
+	else:
+		quaternion = Quaternion(local_forward, -rot_vector.x * 0.00005) * quaternion
 	
 	if Input.is_action_pressed("ui_left"):
 		quaternion = Quaternion(local_forward, -ROTATION_SENSITIVITY) * quaternion
@@ -192,3 +205,7 @@ func redraw_scoreboard() -> void:
 func _toggle_pause_menu() -> void:
 	$UI/PauseMenu.visible = !$UI/PauseMenu.visible
 	is_paused = !is_paused
+
+
+func _on_center_accel_pressed() -> void:
+	accel_off = Input.get_accelerometer()

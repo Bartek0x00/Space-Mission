@@ -18,6 +18,7 @@ config/icon="uid://bo1qv6imctjud"
 [display]
 
 window/subwindows/embed_subwindows=false
+window/stretch/mode="viewport"
 
 [editor]
 
@@ -80,6 +81,10 @@ yaw_right={
 ]
 }
 
+[input_devices]
+
+sensors/enable_accelerometer=true
+
 [layer_names]
 
 3d_physics/layer_1="player"
@@ -98,6 +103,5 @@ yaw_right={
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
+renderer/rendering_method="mobile"
 anti_aliasing/quality/msaa_3d=1

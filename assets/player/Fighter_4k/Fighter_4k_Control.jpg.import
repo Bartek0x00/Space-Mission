@@ -3,16 +3,16 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dmroqldahgaml"
-path.s3tc="res://.godot/imported/Fighter_4k_Control.jpg-8cb0fb1212161797cbcd5f8ac3abda3e.s3tc.ctex"
+path.etc2="res://.godot/imported/Fighter_4k_Control.jpg-8cb0fb1212161797cbcd5f8ac3abda3e.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/player/Fighter_4k/Fighter_4k_Control.jpg"
-dest_files=["res://.godot/imported/Fighter_4k_Control.jpg-8cb0fb1212161797cbcd5f8ac3abda3e.s3tc.ctex"]
+dest_files=["res://.godot/imported/Fighter_4k_Control.jpg-8cb0fb1212161797cbcd5f8ac3abda3e.etc2.ctex"]
 
 [params]
 
