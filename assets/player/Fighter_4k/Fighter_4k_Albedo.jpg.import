@@ -3,16 +3,16 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c6qlaiet6gynv"
-path.etc2="res://.godot/imported/Fighter_4k_Albedo.jpg-010a7634e0209c04ea3f57e91f96ae2e.etc2.ctex"
+path.s3tc="res://.godot/imported/Fighter_4k_Albedo.jpg-010a7634e0209c04ea3f57e91f96ae2e.s3tc.ctex"
 metadata={
-"imported_formats": ["etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/player/Fighter_4k/Fighter_4k_Albedo.jpg"
-dest_files=["res://.godot/imported/Fighter_4k_Albedo.jpg-010a7634e0209c04ea3f57e91f96ae2e.etc2.ctex"]
+dest_files=["res://.godot/imported/Fighter_4k_Albedo.jpg-010a7634e0209c04ea3f57e91f96ae2e.s3tc.ctex"]
 
 [params]
 

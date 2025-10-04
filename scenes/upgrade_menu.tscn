@@ -1,0 +1,56 @@
+[gd_scene load_steps=3 format=3 uid="uid://beip1pvygcoks"]
+
+[ext_resource type="Script" uid="uid://c51luylmkuett" path="res://scripts/upgrade_menu.gd" id="1_e3qxy"]
+[ext_resource type="PackedScene" uid="uid://b21bxfvh33aue" path="res://scenes/buy_stat.tscn" id="2_ksfom"]
+
+[node name="UpgradeMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_e3qxy")
+
+[node name="Stats" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -148.0
+offset_right = 128.0
+offset_bottom = 148.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BuyStat" parent="Stats" instance=ExtResource("2_ksfom")]
+layout_mode = 2
+cost_table = [null, 10, 20, 30, 40, 50, 60]
+
+[node name="ReturnButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.85
+anchor_right = 0.5
+anchor_bottom = 0.85
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "Return"
+
+[node name="ScoreLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.9480001
+anchor_top = 0.062000003
+anchor_right = 0.9480001
+anchor_bottom = 0.062000003
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 48
+text = "Score: 0"
+
+[connection signal="button_down" from="ReturnButton" to="." method="_on_return_button_button_down"]

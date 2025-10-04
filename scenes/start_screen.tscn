@@ -20,21 +20,24 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0.10980392, 0.36078432, 1)
 
-[node name="HostButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 470.0
-offset_top = 365.0
-offset_right = 570.0
-offset_bottom = 429.0
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.57
+anchor_right = 0.5
+anchor_bottom = 0.57
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="HostButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Host"
 
-[node name="JoinButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 584.0
-offset_top = 365.0
-offset_right = 684.0
-offset_bottom = 429.0
+[node name="JoinButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Join"
 
@@ -68,7 +71,7 @@ grow_horizontal = 2
 grow_vertical = 2
 placeholder_text = "Nickname"
 
-[connection signal="button_down" from="HostButton" to="." method="_on_host_button_button_down"]
-[connection signal="button_down" from="JoinButton" to="." method="_on_join_button_button_down"]
+[connection signal="button_down" from="HBoxContainer/HostButton" to="." method="_on_host_button_button_down"]
+[connection signal="button_down" from="HBoxContainer/JoinButton" to="." method="_on_join_button_button_down"]
 [connection signal="text_changed" from="InputIP" to="." method="_on_input_ip_text_changed"]
 [connection signal="text_changed" from="InputNickname" to="." method="_on_input_nickname_text_changed"]

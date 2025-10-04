@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://bjl8086106it7" path="res://assets/asteroid/asteroid_mesh.tscn" id="2_6mo6b"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_6mo6b"]
-custom_solver_bias = 1.0
 radius = 1.5
 
 [node name="Asteroid" type="RigidBody3D"]

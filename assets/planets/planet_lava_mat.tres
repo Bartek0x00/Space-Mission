@@ -1,0 +1,27 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://6rk3lp4ce1er"]
+
+[ext_resource type="Shader" uid="uid://cb6ytrjdbmdo7" path="res://shaders/body.gdshader" id="1_uxbpt"]
+[ext_resource type="Texture2D" uid="uid://xndytbjhb5in" path="res://shaders/noises/planet_lava.tres" id="2_gd6ib"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_uxbpt")
+shader_parameter/emit = 0.0
+shader_parameter/color_1 = Color(1, 0.537255, 0.2, 1)
+shader_parameter/color_1_treshold = 0.253
+shader_parameter/color_1_roughness = 0.1
+shader_parameter/color_1_emit = true
+shader_parameter/color_2 = Color(0.901961, 0.270588, 0.223529, 1)
+shader_parameter/color_2_treshold = 0.303
+shader_parameter/color_3 = Color(0.678431, 0.184314, 0.270588, 1)
+shader_parameter/color_3_treshold = 0.402
+shader_parameter/color_4 = Color(0.321569, 0.2, 0.247059, 1)
+shader_parameter/color_4_treshold = 0.653
+shader_parameter/color_5 = Color(0.239216, 0.160784, 0.211765, 1)
+shader_parameter/color_5_treshold = 1.0
+shader_parameter/noise_gaseous = false
+shader_parameter/noise_gaseous_speed = 0.0025
+shader_parameter/noise_scale = 1.0
+shader_parameter/noise = ExtResource("2_gd6ib")
+shader_parameter/distance_fade_min = 2499.99994412
+shader_parameter/distance_fade_max = 1999.999955296

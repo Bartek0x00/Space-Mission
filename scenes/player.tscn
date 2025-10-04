@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://wkq5kgabux7s"]
+[gd_scene load_steps=25 format=3 uid="uid://wkq5kgabux7s"]
 
 [ext_resource type="Script" uid="uid://bws1ajo4ln3nm" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://dx6b8gilf2tu7" path="res://assets/environment.png" id="3_dqkch"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://cfi6gugp51m7u" path="res://scenes/fighter.tscn" id="4_dqkch"]
 [ext_resource type="Texture2D" uid="uid://b2ws8d6tds5af" path="res://assets/ui/throttle.png" id="4_tuyoq"]
 [ext_resource type="PackedScene" uid="uid://osopme8d5is5" path="res://scenes/pause_menu.tscn" id="5_qlg0r"]
+[ext_resource type="Shader" uid="uid://b730ukuiqqaw4" path="res://shaders/floating_tag.gdshader" id="7_fjrip"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qlg0r"]
 panorama = ExtResource("3_dqkch")
@@ -72,6 +73,42 @@ size = Vector2(40, 40)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_smehm"]
 size = Vector2(40, 40)
 
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_tuyoq"]
+size = Vector2(8, 8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ur7pv"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.1, 0.1, 0.1, 0.3)
+corner_detail = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y4r1p"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0.827222, 0, 1)
+corner_detail = 6
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_smehm"]
+viewport_path = NodePath("TagViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ur7pv"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("7_fjrip")
+shader_parameter/near_distance = 0.0
+shader_parameter/far_distance = 400.000016625
+shader_parameter/near_scale = 2.00000009174012
+shader_parameter/far_scale = 48.000002276740126
+shader_parameter/albedo_texture = SubResource("ViewportTexture_smehm")
+shader_parameter/scale_curve = 2.0
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_tuyoq"]
+viewport_path = NodePath("TagViewport")
+
 [node name="Player" type="CharacterBody3D" groups=["player"]]
 collision_mask = 93
 slide_on_ceiling = false
@@ -82,7 +119,7 @@ metadata/_edit_group_ = true
 transform = Transform3D(-8.742278e-06, -200, 2.3849761e-06, 0, 2.3849761e-06, 200, -200, 8.742278e-06, -1.0425061e-13, 0, -0.6, -3)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.999776, 0.021169, 0, -0.021169, 0.999776, 0, 3.446687, 7.26487)
+transform = Transform3D(1, 0, 0, 0, 0.99974275, 0.022687336, 0, -0.022687336, 0.99974275, 0, 3.446687, 7.26487)
 environment = SubResource("Environment_dqkch")
 
 [node name="Collision" type="CollisionPolygon3D" parent="."]
@@ -94,7 +131,7 @@ polygon = PackedVector2Array(-1.75, 2.4, -2.7, 1.6, -2.75, -0.2, -1.5, -1.4, -0.
 transform = Transform3D(1, 0, 0, 0, 0.999391, -0.0348995, 0, 0.0348995, 0.999391, 0, 0.376025, -5.09144)
 
 [node name="CentralGun" type="Marker3D" parent="Guns"]
-transform = Transform3D(1.0000002, 0, 0, 0, 1, 0, 0, 0, 1.0000004, 0, -0.056945696, -1.2439189)
+transform = Transform3D(1.0000002, 0, 0, 0, 0.9998477, -0.017452411, 0, 0.017452406, 0.99984807, 0, -0.21227726, -1.2384949)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -157,8 +194,6 @@ theme_override_icons/grabber_disabled = ExtResource("4_tuyoq")
 theme_override_styles/slider = SubResource("StyleBoxFlat_qlg0r")
 theme_override_styles/grabber_area = SubResource("StyleBoxFlat_tuyoq")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxEmpty_fjrip")
-max_value = 50.0
-step = 0.5
 rounded = true
 scrollable = false
 
@@ -175,7 +210,7 @@ offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.18, 0.18)
-pivot_offset = Vector2(64, 64)
+pivot_offset = Vector2(64, 15)
 texture = ExtResource("3_qhqgy")
 expand_mode = 1
 stretch_mode = 2
@@ -200,15 +235,82 @@ texture_normal = SubResource("PlaceholderTexture2D_fjrip")
 shape = SubResource("RectangleShape2D_smehm")
 visibility_mode = 1
 
-[node name="NickNameTag" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.658929, -0.029632926)
-visible = false
-billboard = 1
-texture_filter = 5
-text = "Player"
-font_size = 120
-
 [node name="Particles" type="Node3D" parent="."]
+
+[node name="TagViewport" type="SubViewport" parent="."]
+transparent_bg = true
+handle_input_locally = false
+gui_disable_input = true
+size = Vector2i(256, 96)
+render_target_clear_mode = 2
+render_target_update_mode = 4
+
+[node name="Control" type="Control" parent="TagViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="TagViewport/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.25335804, 0.25335804, 0.25335804, 0.59607846)
+
+[node name="VBox" type="VBoxContainer" parent="TagViewport/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="TagViewport/Control/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="NicknameIcon" type="TextureRect" parent="TagViewport/Control/VBox/HBox"]
+layout_mode = 2
+texture = SubResource("PlaceholderTexture2D_tuyoq")
+expand_mode = 2
+
+[node name="NicknameTag" type="Label" parent="TagViewport/Control/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 44
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="HealthBar" type="ProgressBar" parent="TagViewport/Control/VBox"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_ur7pv")
+theme_override_styles/fill = SubResource("StyleBoxFlat_y4r1p")
+step = 1.0
+value = 100.0
+rounded = true
+show_percentage = false
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FloatingTag" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0656118, 0)
+material_override = SubResource("ShaderMaterial_ur7pv")
+pixel_size = 0.005
+billboard = 1
+no_depth_test = true
+texture = SubResource("ViewportTexture_tuyoq")
 
 [connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
 [connection signal="pressed" from="UI/CenterAccel" to="." method="_on_center_accel_pressed"]

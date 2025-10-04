@@ -1,7 +1,7 @@
 extends Node3D
 
-const CHUNK_SIZE: int = 1000
-const VIEW_DISTANCE: int = 3
+const CHUNK_SIZE: int = 1200
+const VIEW_DISTANCE: int = 2
 
 const SCENES: Dictionary = {
 	"Collectable": preload("res://scenes/collectable.tscn"),
@@ -84,20 +84,14 @@ func _spawn_planets(root_container: Node3D, rng: RandomNumberGenerator, chunk_co
 	container.name = "Planets"
 	root_container.add_child(container)
 	
-	var count = rng.randi_range(0, 2)
+	var count = rng.randi_range(0, 1)
 	for i in range(count):
 		var local = _rand_local_pos_with_padding(rng)
 		var world_pos = _world_pos(chunk_coord, local)
 		if get_chunk_coords(world_pos) != chunk_coord:
 			continue
 		var obj = SCENES["Planet"].instantiate()
-		var color_component = rng.randf()
-		obj.input_color = Color(
-			color_component, 
-			clamp(0.123 + (color_component / 2), 0.0, 1.0),
-			clamp(0.919 - (color_component / 3), 0.0, 1.0), 
-			1
-		)
+		obj.rng = rng
 		container.add_child(obj)
 		obj.global_position = world_pos
 

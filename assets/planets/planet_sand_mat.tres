@@ -1,0 +1,27 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://pk7j6020nxr1"]
+
+[ext_resource type="Shader" uid="uid://cb6ytrjdbmdo7" path="res://shaders/body.gdshader" id="1_b3aj0"]
+[ext_resource type="Texture2D" uid="uid://6maxob4srf50" path="res://shaders/noises/planet_sand.tres" id="2_rgx22"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_b3aj0")
+shader_parameter/emit = 0.0
+shader_parameter/color_1 = Color(0.984314, 0.882353, 0.733333, 1)
+shader_parameter/color_1_treshold = 0.36800001748
+shader_parameter/color_1_roughness = 0.0
+shader_parameter/color_1_emit = false
+shader_parameter/color_2 = Color(0.807843, 0.647059, 0.533333, 1)
+shader_parameter/color_2_treshold = 0.5330000253175
+shader_parameter/color_3 = Color(0.572549, 0.380392, 0.223529, 1)
+shader_parameter/color_3_treshold = 0.62000002945
+shader_parameter/color_4 = Color(0.470588, 0.321569, 0.215686, 1)
+shader_parameter/color_4_treshold = 0.7070000335825
+shader_parameter/color_5 = Color(0.32549, 0.266667, 0.219608, 1)
+shader_parameter/color_5_treshold = 1.0
+shader_parameter/noise_gaseous = false
+shader_parameter/noise_gaseous_speed = 0.0025
+shader_parameter/noise_scale = 1.283
+shader_parameter/noise = ExtResource("2_rgx22")
+shader_parameter/distance_fade_min = 2499.99994412
+shader_parameter/distance_fade_max = 1999.999955296

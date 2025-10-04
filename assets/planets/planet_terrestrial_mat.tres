@@ -1,0 +1,41 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://kwecesoc7s8n"]
+
+[ext_resource type="Shader" uid="uid://fvwjdrdf0nif" path="res://shaders/clouds.gdshader" id="1_6d6cs"]
+[ext_resource type="Texture2D" uid="uid://b4nta4b1auodv" path="res://shaders/noises/planet_terrestrial.tres" id="2_25feb"]
+[ext_resource type="Shader" uid="uid://cb6ytrjdbmdo7" path="res://shaders/body.gdshader" id="3_3evks"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c8avg"]
+render_priority = 0
+shader = ExtResource("1_6d6cs")
+shader_parameter/noise_texture = ExtResource("2_25feb")
+shader_parameter/speed = 0.005
+shader_parameter/brightness = 0.5
+shader_parameter/threshold = 1.2
+shader_parameter/fluffiness = 0.1
+shader_parameter/distance_fade_min = 2499.99994412
+shader_parameter/distance_fade_max = 1999.999955296
+
+[resource]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_c8avg")
+shader = ExtResource("3_3evks")
+shader_parameter/emit = 0.0
+shader_parameter/color_1 = Color(0.17, 0.55, 1, 1)
+shader_parameter/color_1_treshold = 0.54
+shader_parameter/color_1_roughness = 0.1
+shader_parameter/color_1_emit = false
+shader_parameter/color_2 = Color(1, 0.94, 0.76, 1)
+shader_parameter/color_2_treshold = 0.56
+shader_parameter/color_3 = Color(0.34, 0.74, 0.5, 1)
+shader_parameter/color_3_treshold = 0.6
+shader_parameter/color_4 = Color(0.27, 0.62, 0.42, 1)
+shader_parameter/color_4_treshold = 0.7
+shader_parameter/color_5 = Color(1, 1, 1, 1)
+shader_parameter/color_5_treshold = 1.0
+shader_parameter/noise_gaseous = false
+shader_parameter/noise_gaseous_speed = 0.0025
+shader_parameter/noise_scale = 1.0
+shader_parameter/noise = ExtResource("2_25feb")
+shader_parameter/distance_fade_min = 2499.99994412
+shader_parameter/distance_fade_max = 1999.999955296
+shader_parameter/expensive_distance_threshold = 600.0

@@ -1,0 +1,35 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://c18tlqsa6wrkf"]
+
+[ext_resource type="Shader" uid="uid://cb6ytrjdbmdo7" path="res://shaders/body.gdshader" id="1_4ipc2"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_wck66"]
+seed = 22
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_lfl2s"]
+noise = SubResource("FastNoiseLite_wck66")
+seamless = true
+seamless_blend_skirt = 0.5
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_4ipc2")
+shader_parameter/emit = 0.0
+shader_parameter/color_1 = Color(0.784314, 0.545098, 0.227451, 1)
+shader_parameter/color_1_treshold = 0.422
+shader_parameter/color_1_roughness = 0.0
+shader_parameter/color_1_emit = false
+shader_parameter/color_2 = Color(0.564706, 0.380392, 0.301961, 1)
+shader_parameter/color_2_treshold = 0.505
+shader_parameter/color_3 = Color(0.827451, 0.611765, 0.494118, 1)
+shader_parameter/color_3_treshold = 0.529
+shader_parameter/color_4 = Color(0.654902, 0.611765, 0.52549, 1)
+shader_parameter/color_4_treshold = 0.574
+shader_parameter/color_5 = Color(0.25098, 0.266667, 0.211765, 1)
+shader_parameter/color_5_treshold = 1.0
+shader_parameter/noise_gaseous = true
+shader_parameter/noise_gaseous_speed = 0.0025
+shader_parameter/noise_scale = 1.425
+shader_parameter/noise = SubResource("NoiseTexture2D_lfl2s")
+shader_parameter/distance_fade_min = 2499.99994412
+shader_parameter/distance_fade_max = 1999.999955296
+shader_parameter/expensive_distance_threshold = 1000.0

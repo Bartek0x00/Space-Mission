@@ -36,21 +36,30 @@ grow_vertical = 2
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 56
 text = "Paused"
 
 [node name="SaveButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 disabled = true
 text = "Save"
 
 [node name="MenuButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Go to Main Menu"
+theme_override_font_sizes/font_size = 32
+text = "Main Menu"
 
-[node name="UnpauseButton" type="Button" parent="VBoxContainer"]
+[node name="UpgradeButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Unpause"
+theme_override_font_sizes/font_size = 32
+text = "Upgrade"
+
+[node name="ResumeButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Resume"
 
 [connection signal="button_down" from="VBoxContainer/MenuButton" to="." method="_on_menu_button_button_down"]
-[connection signal="button_down" from="VBoxContainer/UnpauseButton" to="." method="_on_unpause_button_button_down"]
+[connection signal="button_down" from="VBoxContainer/UpgradeButton" to="." method="_on_upgrade_button_button_down"]
+[connection signal="button_down" from="VBoxContainer/ResumeButton" to="." method="_on_resume_button_button_down"]

@@ -9,7 +9,7 @@ enum Mode {
 var target: Node3D = null
 var mode: Mode = Mode.PATROL
 
-const DAMAGE: int = 20
+const DAMAGE: int = 70
 
 const SPEED: float = 5.0
 const ROTATION_SPEED: float = 5.0
@@ -77,7 +77,8 @@ func _rotate_towards(target_basis: Basis, delta: float) -> void:
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
+	queue_free()
 	if not body.is_local:
 		return
+	print("Body %d collided with Enemy" % body.multiplayer.get_unique_id())
 	get_node("/root/Main").rpc_id(1, "server_sub_health", body.multiplayer.get_unique_id(), DAMAGE)
-	queue_free()
