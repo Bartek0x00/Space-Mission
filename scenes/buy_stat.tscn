@@ -16,7 +16,7 @@ icon = ExtResource("1_islu8")
 icon_alignment = 1
 
 [node name="ColorRect" type="ColorRect" parent="."]
-custom_minimum_size = Vector2(256, 200)
+custom_minimum_size = Vector2(280, 200)
 layout_mode = 2
 color = Color(0.59, 0.59, 0, 1)
 
@@ -33,19 +33,16 @@ alignment = 1
 [node name="UpgradeName" type="Label" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "MaxSpeed"
 horizontal_alignment = 1
 
 [node name="UpgradeLevel" type="Label" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "(0 / 6)"
 horizontal_alignment = 1
 
 [node name="UpgradeCost" type="Label" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
-text = "Cost (20)"
 horizontal_alignment = 1
 
 [node name="DowngradeButton" type="Button" parent="."]

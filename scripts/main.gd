@@ -1,5 +1,7 @@
 extends Node3D
 
+signal stat_changed(stat_type: StatContainer.StatType)
+
 var players: Dictionary = {}
 
 var local_nickname: String = "Player_1"
@@ -13,6 +15,12 @@ const SCENES: Dictionary = {
 	"Waiting": preload("res://scenes/waiting.tscn"),
 	"Planet": preload("res://scenes/planet.tscn")
 }
+
+const STAT_COSTS: = [
+	[10, 20, 30],
+	[10, 20, 30, 40],
+	[10, 20]
+]
 
 func init_server(port: int, nickname: String) -> void:
 	var peer = ENetMultiplayerPeer.new()
@@ -96,7 +104,7 @@ func despawn_player(peer_id: int) -> void:
 	players[multiplayer.get_unique_id()].redraw_scoreboard()
 
 @rpc("any_peer", "call_local", "unreliable_ordered")
-func server_sync_player(peer_id: int, state: Player.MovementSnapshot) -> void:
+func server_sync_player(peer_id: int, state: Dictionary) -> void:
 	if not players.has(peer_id):
 		return
 	players[peer_id].rpc("client_sync_player", peer_id, state)
@@ -126,13 +134,33 @@ func server_sub_health(peer_id: int, value: int) -> void:
 		players[id].rpc_id(id, "client_set_health", peer_id, new_health)
 
 @rpc("any_peer", "call_local", "reliable")
-func server_spawn_bullet(peer_id: int, gun_transform: Transform3D) -> void:
-	rpc("spawn_bullet", peer_id, gun_transform)
+func server_spawn_bullet(peer_id: int, gun_transform: Transform3D, gun_speed: float) -> void:
+	rpc("spawn_bullet", peer_id, gun_transform, gun_speed)
 
 @rpc("authority", "call_local", "unreliable")
-func spawn_bullet(peer_id: int, gun_transform: Transform3D) -> void:
+func spawn_bullet(peer_id: int, gun_transform: Transform3D, gun_speed: float) -> void:
 	var bullet = SCENES["Bullet"].instantiate()
 	bullet.player_id = peer_id
 	add_child(bullet)
 	bullet.global_transform = gun_transform
-	bullet.linear_velocity = -bullet.transform.basis.z * bullet.SPEED
+	var max_bullet_speed_stat = players[peer_id].stats[StatContainer.StatType.BULLET_SPEED]
+	bullet.linear_velocity = -bullet.transform.basis.z * (gun_speed + (bullet.SPEED * max_bullet_speed_stat.mod_table[max_bullet_speed_stat.stage]))
+
+@rpc("any_peer", "call_local", "reliable")
+func server_change_stat(peer_id: int, type: StatContainer.StatType, new_stage: int) -> void:
+	var stats = players[peer_id].stats[type]
+	
+	if (stats.bought_stage < new_stage):
+		if (STAT_COSTS[type][stats.stage] <= players[peer_id].score):
+			var new_score = players[peer_id].score - STAT_COSTS[type][stats.stage]
+			for id in players.keys():
+				players[id].rpc_id(id, "client_set_score", peer_id, new_score)
+	rpc("client_change_stat", peer_id, type, new_stage)
+
+@rpc("authority", "call_local", "reliable")
+func client_change_stat(peer_id: int, type: StatContainer.StatType, new_stage: int) -> void:
+	var tmp = get_node("/root/Main").players[peer_id].stats[type]
+	tmp.stage = new_stage
+	tmp.bought_stage = max(tmp.bought_stage, new_stage)
+	if peer_id == multiplayer.multiplayer_peer.get_unique_id():
+		stat_changed.emit(type)

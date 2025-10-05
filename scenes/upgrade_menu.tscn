@@ -25,10 +25,24 @@ offset_right = 128.0
 offset_bottom = 148.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 24
 
-[node name="BuyStat" parent="Stats" instance=ExtResource("2_ksfom")]
+[node name="Speed" parent="Stats" instance=ExtResource("2_ksfom")]
 layout_mode = 2
-cost_table = Array[int]([10, 20, 30])
+stat_name = "MaxSpeed"
+bg_color = Color(0, 0.45, 0.037499964, 1)
+
+[node name="BulletSpeed" parent="Stats" instance=ExtResource("2_ksfom")]
+layout_mode = 2
+stat_type = 1
+stat_name = "BulletSpeed"
+bg_color = Color(1, 0, 0, 1)
+
+[node name="BulletDamage" parent="Stats" instance=ExtResource("2_ksfom")]
+layout_mode = 2
+stat_type = 2
+stat_name = "BulletDamage"
+bg_color = Color(0.3666668, 0, 1, 1)
 
 [node name="ReturnButton" type="Button" parent="."]
 layout_mode = 1

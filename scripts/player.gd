@@ -1,15 +1,5 @@
 class_name Player extends CharacterBody3D
 
-class MovementSnapshot:
-	var global_position: Vector3
-	var quaternion: Quaternion
-	var velocity: Vector3
-	
-	func _init(_global_position: Vector3, _quaternion: Quaternion, _velocity: Vector3) -> void:
-		self.global_position = _global_position
-		self.quaternion = _quaternion
-		self.velocity = _velocity
-
 var is_local: bool = false
 var nickname: String = "Player"
 
@@ -27,14 +17,22 @@ var bullet_scene: PackedScene = preload("res://scenes/bullet.tscn")
 @export var bullet_cooldown: float
 var last_shot_time: float = -1.0
 
-var score: int = 0
+var score: int = 100
 var health: int = 100
 
 var stats: Array[StatContainer.StatData] = [
 	StatContainer.StatData.new(
-		[0, 10, 20, 30],
+		[10, 20, 30],
 		[0.5, 1.0, 1.5, 2.0]
-	)
+	),
+	StatContainer.StatData.new(
+		[10, 20, 30, 40],
+		[0.25, 0.5, 0.75, 1.0, 1.5]
+	),
+	StatContainer.StatData.new(
+		[10, 20],
+		[0.5, 1.0, 2.0]
+	),
 ]
 
 var global_seed: int = 123456789
@@ -127,15 +125,18 @@ func _physics_process(delta: float) -> void:
 		throttle = clamp(throttle + THROTTLE_SENSITIVITY, 0.0, MAX_THROTTLE)
 		$UI/Throttle.value = throttle
 	
-	velocity = -basis.z * throttle
+	var max_speed_stat = stats[StatContainer.StatType.MAX_SPEED]
+	velocity = -basis.z * (throttle * max_speed_stat.mod_table[max_speed_stat.stage])
 	move_and_slide()
 	
 	_sync_timer += delta
 	if _sync_timer >= _sync_interval:
 		_sync_timer = 0.0
-		get_parent().rpc_id(1, "server_sync_player", multiplayer.get_unique_id(), MovementSnapshot.new(
-			global_position, quaternion, velocity
-		))
+		var snapshot = {
+			"p": global_position,
+			"q": quaternion
+		}
+		get_parent().rpc_id(1, "server_sync_player", multiplayer.get_unique_id(), snapshot)
 	
 	var current_chunk = get_parent().get_node("ChunkManager").get_chunk_coords(global_transform.origin)
 	if current_chunk != last_chunk:
@@ -156,15 +157,14 @@ func client_sync_nickname(peer_id: int, new_nickname: String) -> void:
 	redraw_scoreboard()
 
 @rpc("authority", "call_local", "unreliable_ordered")
-func client_sync_player(peer_id: int, state: MovementSnapshot) -> void:
+func client_sync_player(peer_id: int, state: Dictionary) -> void:
 	if peer_id == multiplayer.get_unique_id():
 		return
 	var tmp_players = get_parent().players
 	if not tmp_players.has(peer_id):
 		return
-	tmp_players[peer_id].global_position = state.global_position
-	tmp_players[peer_id].quaternion = state.quaternion
-	tmp_players[peer_id].velocity = state.velocity
+	tmp_players[peer_id].global_position = state["p"]
+	tmp_players[peer_id].quaternion = state["q"]
 
 @rpc("authority", "call_local", "reliable")
 func client_set_score(peer_id: int, new_value: int) -> void:
@@ -183,7 +183,8 @@ func shoot_bullets() -> void:
 	var now = Time.get_ticks_msec() / 1000.0
 	if now - last_shot_time >= SHOOT_COOLDOWN:
 		for gun in $Guns.get_children():
-			get_parent().rpc_id(1, "server_spawn_bullet", multiplayer.get_unique_id(), gun.global_transform)
+			var gun_speed = abs(velocity.dot(-gun.global_transform.basis.z))
+			get_parent().rpc_id(1, "server_spawn_bullet", multiplayer.get_unique_id(), gun.global_transform, gun_speed)
 		last_shot_time = now
 
 func redraw_scoreboard() -> void:

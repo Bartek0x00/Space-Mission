@@ -18,7 +18,8 @@ radius = 0.1
 height = 0.4
 
 [node name="Bullet" type="RigidBody3D" groups=["bullet"]]
-collision_mask = 65
+collision_layer = 2
+collision_mask = 125
 can_sleep = false
 continuous_cd = true
 contact_monitor = true

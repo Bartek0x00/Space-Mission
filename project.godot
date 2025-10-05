@@ -21,8 +21,8 @@ window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/mode=2
 window/subwindows/embed_subwindows=false
-window/stretch/mode="viewport"
-window/stretch/aspect="expand"
+window/stretch/mode="canvas_items"
+window/stretch/aspect="ignore"
 
 [editor]
 
@@ -107,5 +107,5 @@ sensors/enable_accelerometer=true
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
+rendering_device/driver.windows="d3d12"
+textures/vram_compression/import_etc2_astc=true

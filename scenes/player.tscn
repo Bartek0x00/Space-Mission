@@ -246,6 +246,7 @@ position = Vector2(26, 207)
 texture_normal = SubResource("PlaceholderTexture2D_smehm")
 shape = SubResource("RectangleShape2D_ur7pv")
 action = "escape"
+visibility_mode = 1
 
 [node name="Particles" type="Node3D" parent="."]
 
