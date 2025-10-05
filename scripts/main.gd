@@ -96,7 +96,7 @@ func despawn_player(peer_id: int) -> void:
 	players[multiplayer.get_unique_id()].redraw_scoreboard()
 
 @rpc("any_peer", "call_local", "unreliable_ordered")
-func server_sync_player(peer_id: int, state: Dictionary) -> void:
+func server_sync_player(peer_id: int, state: Player.MovementSnapshot) -> void:
 	if not players.has(peer_id):
 		return
 	players[peer_id].rpc("client_sync_player", peer_id, state)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://wkq5kgabux7s"]
+[gd_scene load_steps=27 format=3 uid="uid://wkq5kgabux7s"]
 
 [ext_resource type="Script" uid="uid://bws1ajo4ln3nm" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://dx6b8gilf2tu7" path="res://assets/environment.png" id="3_dqkch"]
@@ -71,6 +71,12 @@ expand_margin_right = 8.0
 size = Vector2(40, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_smehm"]
+size = Vector2(40, 40)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_smehm"]
+size = Vector2(40, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ur7pv"]
 size = Vector2(40, 40)
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_tuyoq"]
@@ -230,10 +236,16 @@ visible = false
 
 [node name="CenterAccel" type="TouchScreenButton" parent="UI"]
 material = SubResource("CanvasItemMaterial_tuyoq")
-position = Vector2(150, 20)
+position = Vector2(210, 57)
 texture_normal = SubResource("PlaceholderTexture2D_fjrip")
 shape = SubResource("RectangleShape2D_smehm")
 visibility_mode = 1
+
+[node name="PauseMenuButton" type="TouchScreenButton" parent="UI"]
+position = Vector2(26, 207)
+texture_normal = SubResource("PlaceholderTexture2D_smehm")
+shape = SubResource("RectangleShape2D_ur7pv")
+action = "escape"
 
 [node name="Particles" type="Node3D" parent="."]
 
@@ -313,4 +325,5 @@ no_depth_test = true
 texture = SubResource("ViewportTexture_tuyoq")
 
 [connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="value_changed" from="UI/Throttle" to="." method="_on_throttle_value_changed"]
 [connection signal="pressed" from="UI/CenterAccel" to="." method="_on_center_accel_pressed"]

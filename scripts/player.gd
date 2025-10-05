@@ -1,4 +1,14 @@
-extends CharacterBody3D
+class_name Player extends CharacterBody3D
+
+class MovementSnapshot:
+	var global_position: Vector3
+	var quaternion: Quaternion
+	var velocity: Vector3
+	
+	func _init(_global_position: Vector3, _quaternion: Quaternion, _velocity: Vector3) -> void:
+		self.global_position = _global_position
+		self.quaternion = _quaternion
+		self.velocity = _velocity
 
 var is_local: bool = false
 var nickname: String = "Player"
@@ -20,12 +30,17 @@ var last_shot_time: float = -1.0
 var score: int = 0
 var health: int = 100
 
-var stats := [0, 0, 0, 0]
+var stats: Array[StatContainer.StatData] = [
+	StatContainer.StatData.new(
+		[0, 10, 20, 30],
+		[0.5, 1.0, 1.5, 2.0]
+	)
+]
 
 var global_seed: int = 123456789
 var last_chunk: Vector3i = Vector3i(1 << 30, 1 << 30, 1 << 30)
 
-var rot_vector: Vector3 = Vector3.ZERO
+var rot_vector: Vector2 = Vector2.ZERO
 var accel_off: Vector3 = Vector3.ZERO
 
 var _sync_timer: float = 0.0
@@ -72,8 +87,8 @@ func _physics_process(delta: float) -> void:
 	if OS.has_feature("mobile"):
 		var accel = Input.get_accelerometer()
 		rot_vector.x = (accel.x - accel_off.x) * ACCEL_SENSITIVITY
-		rot_vector.y = -(accel.y - accel_off.y) * ACCEL_SENSITIVITY
-		rot_vector.z = (accel.z - accel_off.z) * ACCEL_SENSITIVITY
+		rot_vector.y = (accel.z - accel_off.z) * ACCEL_SENSITIVITY
+		#rot_vector.z = (accel.z - accel_off.z) * ACCEL_SENSITIVITY
 	else:
 		if get_window().has_focus():
 			var mouse_pos = get_viewport().get_mouse_position()
@@ -88,12 +103,11 @@ func _physics_process(delta: float) -> void:
 	var local_up = (quaternion * Vector3.UP).normalized()
 	var local_forward = (quaternion * Vector3.FORWARD).normalized()
 	
-	quaternion = Quaternion(local_up, rot_vector.x) * quaternion
 	quaternion = Quaternion(local_right, rot_vector.y) * quaternion
 	if OS.has_feature("mobile"):
-		pass
 		quaternion = Quaternion(local_forward, rot_vector.x) * quaternion
 	else:
+		quaternion = Quaternion(local_up, rot_vector.x) * quaternion
 		quaternion = Quaternion(local_forward, -rot_vector.x * 0.00005) * quaternion
 	
 	if Input.is_action_pressed("ui_left"):
@@ -107,12 +121,10 @@ func _physics_process(delta: float) -> void:
 	quaternion = quaternion.normalized()
 	
 	if Input.is_action_pressed("throttle_down"):
-		throttle -= THROTTLE_SENSITIVITY
-		throttle = clamp(throttle, 0.0, MAX_THROTTLE)
+		throttle = clamp(throttle - THROTTLE_SENSITIVITY, 0.0, MAX_THROTTLE)
 		$UI/Throttle.value = throttle
 	if Input.is_action_pressed("throttle_up"):
-		throttle += THROTTLE_SENSITIVITY
-		throttle = clamp(throttle, 0.0, MAX_THROTTLE)
+		throttle = clamp(throttle + THROTTLE_SENSITIVITY, 0.0, MAX_THROTTLE)
 		$UI/Throttle.value = throttle
 	
 	velocity = -basis.z * throttle
@@ -121,12 +133,9 @@ func _physics_process(delta: float) -> void:
 	_sync_timer += delta
 	if _sync_timer >= _sync_interval:
 		_sync_timer = 0.0
-		var snapshot = {
-			"p": global_position,
-			"q": quaternion,
-			"v": velocity
-		}
-		get_parent().rpc_id(1, "server_sync_player", multiplayer.get_unique_id(), snapshot)
+		get_parent().rpc_id(1, "server_sync_player", multiplayer.get_unique_id(), MovementSnapshot.new(
+			global_position, quaternion, velocity
+		))
 	
 	var current_chunk = get_parent().get_node("ChunkManager").get_chunk_coords(global_transform.origin)
 	if current_chunk != last_chunk:
@@ -147,15 +156,15 @@ func client_sync_nickname(peer_id: int, new_nickname: String) -> void:
 	redraw_scoreboard()
 
 @rpc("authority", "call_local", "unreliable_ordered")
-func client_sync_player(peer_id: int, state: Dictionary) -> void:
+func client_sync_player(peer_id: int, state: MovementSnapshot) -> void:
 	if peer_id == multiplayer.get_unique_id():
 		return
 	var tmp_players = get_parent().players
 	if not tmp_players.has(peer_id):
 		return
-	tmp_players[peer_id].global_position = state["p"]
-	tmp_players[peer_id].quaternion = state["q"]
-	tmp_players[peer_id].velocity = state["v"]
+	tmp_players[peer_id].global_position = state.global_position
+	tmp_players[peer_id].quaternion = state.quaternion
+	tmp_players[peer_id].velocity = state.velocity
 
 @rpc("authority", "call_local", "reliable")
 func client_set_score(peer_id: int, new_value: int) -> void:
@@ -227,3 +236,6 @@ func _on_center_accel_pressed() -> void:
 func _update_nickname(new_nickname: String) -> void:
 	nickname = new_nickname
 	$TagViewport/Control/VBox/HBox/NicknameTag.text = new_nickname
+
+func _on_throttle_value_changed(value: float) -> void:
+	throttle = clamp(value, 0.0, MAX_THROTTLE)

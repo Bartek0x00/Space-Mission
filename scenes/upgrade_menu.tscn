@@ -28,7 +28,7 @@ grow_vertical = 2
 
 [node name="BuyStat" parent="Stats" instance=ExtResource("2_ksfom")]
 layout_mode = 2
-cost_table = [null, 10, 20, 30, 40, 50, 60]
+cost_table = Array[int]([10, 20, 30])
 
 [node name="ReturnButton" type="Button" parent="."]
 layout_mode = 1

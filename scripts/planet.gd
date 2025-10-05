@@ -1,55 +1,65 @@
 extends StaticBody3D
 
-const PLANET_TYPES = [
-	{
-		"w": 40,
-		"m": preload("res://assets/planets/planet_sand_mat.tres"),
-		"s": 64.0
-	},
-	{
-		"w": 40,
-		"m": preload("res://assets/planets/planet_ice_mat.tres"),
-		"s": 96.0
-	},
-	{
-		"w": 10,
-		"m": preload("res://assets/planets/planet_gaseous_mat.tres"),
-		"s": 512.0
-	},
-	{
-		"w": 30,
-		"m": preload("res://assets/planets/planet_lava_mat.tres"),
-		"s": 128.0
-	},
-	{
-		"w": 4,
-		"m": preload("res://assets/planets/planet_terrestrial_mat.tres"),
-		"s": 96.0
-	},
-	{
-		"w": 1,
-		"m": preload("res://assets/planets/star_mat.tres"),
-		"s": 2048.0
-	}
+class PlanetData:
+	var rand_weight: int
+	var material: ShaderMaterial
+	var scale: float
+	
+	func _init(_rand_weight: int, _material: ShaderMaterial, _scale: float) -> void:
+		self.rand_weight = _rand_weight
+		self.material = _material
+		self.scale = _scale
+
+var PLANET_TYPES: Array[PlanetData] = [
+	PlanetData.new(
+		40,
+		preload("res://assets/planets/planet_sand_mat.tres"),
+		64.0
+	),
+	PlanetData.new(
+		40,
+		preload("res://assets/planets/planet_ice_mat.tres"),
+		96.0
+	),
+	PlanetData.new(
+		10,
+		preload("res://assets/planets/planet_gaseous_mat.tres"),
+		512.0
+	),
+	PlanetData.new(
+		30,
+		preload("res://assets/planets/planet_lava_mat.tres"),
+		128.0
+	),
+	PlanetData.new(
+		4,
+		preload("res://assets/planets/planet_terrestrial_mat.tres"),
+		96.0
+	),
+	PlanetData.new(
+		1,
+		preload("res://assets/planets/star_mat.tres"),
+		2048.0
+	)
 ]
 
 var rng: RandomNumberGenerator
 
 func _ready() -> void:
 	var planet_type := _pick_planet()
-	$Mesh.material_override = planet_type["m"]
-	scale *= planet_type["s"]
+	$Mesh.material_override = planet_type.material
+	scale *= planet_type.scale
 
-func _pick_planet() -> Dictionary:
+func _pick_planet() -> PlanetData:
 	var total_weight = 0
 	for entry in PLANET_TYPES:
-		total_weight += entry["w"]
+		total_weight += entry.rand_weight
 	
 	var choice := rng.randi_range(1, total_weight)
 	var cumulative := 0
 	
 	for entry in PLANET_TYPES:
-		cumulative += entry["w"]
+		cumulative += entry.rand_weight
 		if choice <= cumulative:
 			return entry
 	
