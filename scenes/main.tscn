@@ -1,9 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://ypck5285upfy"]
+[gd_scene load_steps=3 format=3 uid="uid://ypck5285upfy"]
 
 [ext_resource type="Script" uid="uid://6h80g83l7sx0" path="res://scripts/main.gd" id="1_jyhfs"]
-[ext_resource type="PackedScene" uid="uid://b8plt5tqj7bje" path="res://scenes/airfield.tscn" id="2_0wfyh"]
-[ext_resource type="PackedScene" uid="uid://c1b4gh42gbbme" path="res://scenes/enemy_path.tscn" id="6_tefeu"]
-[ext_resource type="PackedScene" uid="uid://cior0dcs6ed63" path="res://scenes/enemy.tscn" id="7_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://08rk50wg4ekh" path="res://scenes/chunk_manager.tscn" id="8_tipki"]
 
 [node name="Main" type="Node3D"]
@@ -13,16 +10,5 @@ script = ExtResource("1_jyhfs")
 transform = Transform3D(0.701929, -0.480187, 0.526038, 0, 0.738561, 0.674186, -0.712247, -0.473231, 0.518418, 0, 1.54736, 1.80861)
 light_energy = 1.4
 shadow_enabled = true
-
-[node name="Airfield" parent="." instance=ExtResource("2_0wfyh")]
-collision_layer = 16
-
-[node name="EnemyPath" parent="." instance=ExtResource("6_tefeu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 64, 0)
-
-[node name="Enemy" parent="." instance=ExtResource("7_o6xl0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 64, 0)
-collision_layer = 4
-collision_mask = 115
 
 [node name="ChunkManager" parent="." instance=ExtResource("8_tipki")]

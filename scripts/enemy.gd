@@ -9,15 +9,15 @@ enum Mode {
 var target: Node3D = null
 var mode: Mode = Mode.PATROL
 
-const DAMAGE: int = 70
+const DAMAGE: int = 20
+const SCORE: int = 30
 
-const SPEED: float = 5.0
-const ROTATION_SPEED: float = 5.0
+const SPEED: float = 32.0
+const ROTATION_SPEED: float = 16.0
 
 var path_follow: PathFollow3D
 
 func _ready() -> void:
-	path_follow = get_parent().get_node("EnemyPath/EnemyPathFollow")
 	global_position = path_follow.global_position
 
 func _physics_process(delta: float) -> void:
@@ -75,10 +75,11 @@ func _rotate_towards(target_basis: Basis, delta: float) -> void:
 	angular_velocity = angular / delta
 
 func _on_body_entered(body: Node) -> void:
-	if not body.is_in_group("player"):
-		return
-	queue_free()
-	if not body.is_local:
-		return
-	print("Body %d collided with Enemy" % body.multiplayer.get_unique_id())
-	get_node("/root/Main").rpc_id(1, "server_sub_health", body.multiplayer.get_unique_id(), DAMAGE)
+	if body.is_in_group("bullet"):
+		queue_free()
+		get_node("/root/Main").rpc_id(1, "server_add_score", body.player_id, SCORE)
+	elif body.is_in_group("player"):
+		queue_free()
+		if not body.is_local:
+			return
+		get_node("/root/Main").rpc_id(1, "server_sub_health", body.multiplayer.get_unique_id(), DAMAGE)

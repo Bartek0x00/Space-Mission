@@ -17,7 +17,7 @@ var bullet_scene: PackedScene = preload("res://scenes/bullet.tscn")
 @export var bullet_cooldown: float
 var last_shot_time: float = -1.0
 
-var score: int = 100
+var score: int = 0
 var health: int = 100
 
 var stats: Array[StatContainer.StatData] = [
@@ -76,6 +76,18 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_released("shoot"):
 		shoot_bullets()
 
+func _get_normalized_mouse_pos() -> Vector2:
+	var viewport = get_viewport()
+	var vrect = viewport.get_visible_rect()
+	var mouse_pos = viewport.get_mouse_position()
+	
+	if not vrect.has_point(mouse_pos):
+		return Vector2.ZERO
+	
+	var center: Vector2 = vrect.position + vrect.size * 0.5
+	var dir: Vector2 = mouse_pos - center
+	
+	return Vector2(-dir.x / vrect.size.x, -dir.y / vrect.size.y)
 
 func _physics_process(delta: float) -> void:
 	if not is_local:
@@ -89,13 +101,9 @@ func _physics_process(delta: float) -> void:
 		#rot_vector.z = (accel.z - accel_off.z) * ACCEL_SENSITIVITY
 	else:
 		if get_window().has_focus():
-			var mouse_pos = get_viewport().get_mouse_position()
-			var screen_center = get_window().size * 0.5
-			if get_viewport().get_visible_rect().has_point(mouse_pos):
-				var tmp = (mouse_pos - screen_center) * Vector2(-1, -1)
-				var screen_size = get_viewport().get_visible_rect().size
-				rot_vector.x = (tmp.x * MOUSE_SENSITIVITY) / screen_size.x
-				rot_vector.y = (tmp.y * MOUSE_SENSITIVITY) / screen_size.y
+			var pos = _get_normalized_mouse_pos()
+			rot_vector.x = pos.x * MOUSE_SENSITIVITY
+			rot_vector.y = pos.y * MOUSE_SENSITIVITY
 	
 	var local_right = (quaternion * Vector3.RIGHT).normalized()
 	var local_up = (quaternion * Vector3.UP).normalized()
@@ -173,6 +181,11 @@ func client_set_score(peer_id: int, new_value: int) -> void:
 
 @rpc("authority", "call_local", "reliable")
 func client_set_health(peer_id: int, new_value: int) -> void:
+	if peer_id == multiplayer.multiplayer_peer.get_unique_id():
+		if new_value <= 0:
+			get_tree().change_scene_to_file("res://scenes/defeat.tscn")
+			get_node("/root/Main").remove()
+			return
 	get_parent().players[peer_id].health = new_value
 	redraw_healthbars(peer_id, new_value)
 
@@ -197,6 +210,7 @@ func redraw_scoreboard() -> void:
 	list.sort_custom(func (a, b): return a.score > b.score)
 	for player in list:
 		var label = Label.new()
+		label.add_theme_font_size_override("font_size", 36)
 		label.text = "%s: %d" % [player.nickname, player.score]
 		$UI/ScoreBoard.add_child(label)
 

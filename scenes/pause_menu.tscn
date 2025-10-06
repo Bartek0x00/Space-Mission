@@ -33,31 +33,33 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 24
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 56
+theme_override_font_sizes/font_size = 64
 text = "Paused"
+horizontal_alignment = 1
 
 [node name="SaveButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 disabled = true
 text = "Save"
 
 [node name="MenuButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "Main Menu"
 
 [node name="UpgradeButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "Upgrade"
 
 [node name="ResumeButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "Resume"
 
 [connection signal="button_down" from="VBoxContainer/MenuButton" to="." method="_on_menu_button_button_down"]

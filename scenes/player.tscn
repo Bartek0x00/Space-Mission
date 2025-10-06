@@ -18,6 +18,9 @@ sky_material = SubResource("PanoramaSkyMaterial_qlg0r")
 background_mode = 2
 sky = SubResource("Sky_qhqgy")
 ambient_light_color = Color(0.47, 0.47, 0.47, 1)
+glow_enabled = true
+glow_intensity = 0.1
+glow_blend_mode = 0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fjrip"]
 content_margin_left = 2.0
@@ -146,7 +149,7 @@ offset_left = 30.0
 offset_top = 30.0
 offset_right = 70.0
 offset_bottom = 77.0
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 48
 
 [node name="HealthBar" type="ProgressBar" parent="UI"]
 anchors_preset = 5
@@ -155,7 +158,7 @@ anchor_right = 0.5
 offset_left = -256.0
 offset_top = 30.0
 offset_right = 256.0
-offset_bottom = 76.0
+offset_bottom = 94.0
 grow_horizontal = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_fjrip")
 theme_override_styles/fill = SubResource("StyleBoxFlat_smehm")
@@ -177,7 +180,7 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 40
 text = "100 HP"
 
 [node name="Throttle" type="VSlider" parent="UI"]
@@ -186,12 +189,13 @@ anchor_left = 0.924
 anchor_top = 0.638
 anchor_right = 0.924
 anchor_bottom = 0.638
-offset_left = -30.448
-offset_top = -75.424
-offset_right = 42.552
-offset_bottom = 122.576
+offset_left = -75.08008
+offset_top = -212.04004
+offset_right = -2.0800781
+offset_bottom = -14.040039
 grow_horizontal = 0
 grow_vertical = 2
+scale = Vector2(2, 2)
 size_flags_horizontal = 8
 theme_override_constants/center_grabber = 1
 theme_override_icons/grabber = ExtResource("4_tuyoq")
@@ -216,7 +220,7 @@ offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.18, 0.18)
-pivot_offset = Vector2(64, 15)
+pivot_offset = Vector2(64, 64)
 texture = ExtResource("3_qhqgy")
 expand_mode = 1
 stretch_mode = 2

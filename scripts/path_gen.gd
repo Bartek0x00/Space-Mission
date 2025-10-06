@@ -1,9 +1,9 @@
 @tool
 extends EditorScript
 
-var save_path: String = "res://ellipse_curve.tres"
-var a: float = 100.0    # ellipse radius on X axis
-var b: float = 60.0    # ellipse radius on Z axis
+var save_path: String = "res://assets/enemy_path_curves/curve.tres"
+var a: float = 360.0    # ellipse radius on X axis
+var b: float = 360.0    # ellipse radius on Z axis
 var y: float = 0.0    # vertical offset (Y)
 var bake_interval: float = 0.05  # sampling resolution used by Curve3D when baking
 var use_bezier: bool = true  # if true uses 4-cubic-bezier approximation, otherwise sampled points

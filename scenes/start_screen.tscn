@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bmpw3y6v87q5o"]
+[gd_scene load_steps=3 format=3 uid="uid://bmpw3y6v87q5o"]
 
 [ext_resource type="Script" uid="uid://jnwlmcxm1ye6" path="res://scripts/start_screen.gd" id="1_tx5wa"]
+[ext_resource type="VideoStream" uid="uid://c5x5urvrj1wrm" path="res://assets/movie/movie.ogv" id="2_o7i0r"]
 
 [node name="StartScreen" type="Control"]
 layout_mode = 3
@@ -11,67 +12,55 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_tx5wa")
 
-[node name="Background" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0.10980392, 0.36078432, 1)
+[node name="Background" type="VideoStreamPlayer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+stream = ExtResource("2_o7i0r")
+autoplay = true
+loop = true
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 598.0
+offset_bottom = 1082.0
+color = Color(0, 0.1333332, 1, 0.13725491)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
-anchor_top = 0.57
-anchor_right = 0.5
-anchor_bottom = 0.57
-grow_horizontal = 2
+anchor_left = 0.07300001
+anchor_top = 0.633
+anchor_right = 0.07300001
+anchor_bottom = 0.633
 grow_vertical = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 24
 
-[node name="HostButton" type="Button" parent="HBoxContainer"]
+[node name="InputIP" type="LineEdit" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Host"
-
-[node name="JoinButton" type="Button" parent="HBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Join"
-
-[node name="InputIP" type="LineEdit" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -50.0
-offset_top = -64.0
-offset_right = 50.0
-offset_bottom = -32.0
-grow_horizontal = 2
-grow_vertical = 2
+theme_override_font_sizes/font_size = 46
 placeholder_text = "127.0.0.1"
 
-[node name="InputNickname" type="LineEdit" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -50.0
-offset_top = -16.0
-offset_right = 50.0
-offset_bottom = 16.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="InputNickname" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 46
 placeholder_text = "Nickname"
 
-[connection signal="button_down" from="HBoxContainer/HostButton" to="." method="_on_host_button_button_down"]
-[connection signal="button_down" from="HBoxContainer/JoinButton" to="." method="_on_join_button_button_down"]
-[connection signal="text_changed" from="InputIP" to="." method="_on_input_ip_text_changed"]
-[connection signal="text_changed" from="InputNickname" to="." method="_on_input_nickname_text_changed"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HostButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Host"
+
+[node name="JoinButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Join"
+
+[connection signal="text_changed" from="VBoxContainer/InputIP" to="." method="_on_input_ip_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/InputNickname" to="." method="_on_input_nickname_text_changed"]
+[connection signal="button_down" from="VBoxContainer/HBoxContainer/HostButton" to="." method="_on_host_button_button_down"]
+[connection signal="button_down" from="VBoxContainer/HBoxContainer/JoinButton" to="." method="_on_join_button_button_down"]

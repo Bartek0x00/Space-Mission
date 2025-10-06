@@ -1,24 +1,41 @@
-[gd_scene load_steps=8 format=3 uid="uid://bxl7fugdldugv"]
+[gd_scene load_steps=9 format=3 uid="uid://bxl7fugdldugv"]
 
 [ext_resource type="Script" uid="uid://wb6pa58votu3" path="res://scripts/collectable.gd" id="1_ti8a4"]
+[ext_resource type="Shader" uid="uid://btdimxhwyba31" path="res://shaders/scrap1.gdshader" id="2_ftjwp"]
 [ext_resource type="Texture2D" uid="uid://dvyple6cjalf4" path="res://assets/scrap/scrap_Albedo.jpg" id="2_i8gcc"]
 [ext_resource type="Texture2D" uid="uid://dmifsgc7wmjpc" path="res://assets/scrap/scrap_Control.jpg" id="3_ftjwp"]
 [ext_resource type="Texture2D" uid="uid://dimxpjmoeuuh6" path="res://assets/scrap/scrap_Normal.png" id="4_cy7d5"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_llqga"]
-radius = 1.75
+radius = 3.5
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ti8a4"]
-albedo_texture = ExtResource("2_i8gcc")
-metallic = 1.0
-metallic_texture = ExtResource("3_ftjwp")
-metallic_texture_channel = 1
-roughness_texture = ExtResource("3_ftjwp")
-normal_enabled = true
-normal_texture = ExtResource("4_cy7d5")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cy7d5"]
+render_priority = 0
+shader = ExtResource("2_ftjwp")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/texture_albedo = ExtResource("2_i8gcc")
+shader_parameter/distance_fade_min = 2500.0
+shader_parameter/distance_fade_max = 2000.0
+shader_parameter/albedo_texture_size = Vector2i(2048, 2048)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/texture_metallic = ExtResource("3_ftjwp")
+shader_parameter/metallic_texture_channel = Vector4(0, 1, 0, 0)
+shader_parameter/texture_roughness = ExtResource("3_ftjwp")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 1.0
+shader_parameter/texture_normal = ExtResource("4_cy7d5")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/emission_strength = 10.0
+shader_parameter/pulse_speed = 0.9
+shader_parameter/emission_color = Vector3(1, 0.85, 0.25)
 
 [sub_resource type="BoxMesh" id="BoxMesh_llfh3"]
-material = SubResource("StandardMaterial3D_ti8a4")
+material = SubResource("ShaderMaterial_cy7d5")
 
 [node name="Collectable" type="RigidBody3D"]
 collision_layer = 32
@@ -32,39 +49,39 @@ script = ExtResource("1_ti8a4")
 shape = SubResource("SphereShape3D_llqga")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.518644, 0.0107966, -0.654358, -0.727725, 0.0134565, 0, 0.448804, 0.00934275, 0.756185, 0, 0, 0)
+transform = Transform3D(1.5559316, 0.03301767, -1.9630742, -2.1831748, 0.041152146, -4.905718e-07, 1.3464117, 0.028571567, 2.2685544, 0, 0, 0)
 mesh = SubResource("BoxMesh_llfh3")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.393575, -0.00819305, -0.818972, -0.907161, 0.00063117, 0.419553, -0.148856, 0.0178159, -0.391485, 0.179573, 0, -0.438395)
+transform = Transform3D(-1.1807246, -0.025055647, -2.456914, -2.7214825, 0.001930226, 1.2586578, -0.44656807, 0.054483835, -1.1744595, 0.179573, 0, -0.438395)
 mesh = SubResource("BoxMesh_llfh3")
 
 [node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.393575, -0.00819305, -0.818972, 0.349879, -0.0174982, 0.286622, -0.850108, -0.0034086, 0.497125, 0.179573, -0.235852, 0.446562)
+transform = Transform3D(-1.1807249, -0.025055608, -2.4569147, 1.0496371, -0.053512204, 0.859867, -2.5503235, -0.010424018, 1.4913749, 0.179573, -0.235852, 0.446562)
 mesh = SubResource("BoxMesh_llfh3")
 
 [node name="MeshInstance3D5" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.51716, 0.00889645, -0.725901, -0.0993051, -0.0171513, -0.475326, -0.850108, -0.0034086, 0.497125, -0.371395, 0.287881, 0.446562)
+transform = Transform3D(-1.5514802, 0.027206691, -2.1777048, -0.29791537, -0.05245127, -1.4259757, -2.5503247, -0.0104240095, 1.4913734, -0.371395, 0.287881, 0.446562)
 mesh = SubResource("BoxMesh_llfh3")
 
 [node name="MeshInstance3D6" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.281974, -0.012696, -0.708339, 0.444755, -0.0145645, 0.501122, -0.850108, -0.0034086, 0.497125, -0.371395, 0.287881, -0.779027)
+transform = Transform3D(-0.84592235, -0.03882634, -2.1250184, 1.3342646, -0.044540476, 1.5033636, -2.550324, -0.010424053, 1.4913733, -0.371395, 0.287881, -0.779027)
 mesh = SubResource("BoxMesh_llfh3")
 
 [node name="MeshInstance3D7" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.24767, -0.0115135, -0.770898, -0.332753, -0.0156724, 0.501178, -0.909909, 0.00259749, -0.393113, 0.262976, 0.350872, 0.985652)
+transform = Transform3D(0.74301076, -0.035210066, -2.312696, -0.998259, -0.047928605, 1.5035293, -2.729728, 0.007943542, -1.1793371, 0.262976, 0.350872, 0.985652)
 mesh = SubResource("BoxMesh_llfh3")
 
 [node name="MeshInstance3D8" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.0774176, -0.0193303, -0.152617, -0.407519, -0.00212744, 0.906736, -0.909909, 0.00259749, -0.393113, 0.262976, -0.509428, 0.164462)
+transform = Transform3D(-0.23225261, -0.05911491, -0.45785105, -1.2225573, -0.0065060277, 2.7202082, -2.7297275, 0.007943498, -1.1793387, 0.262976, -0.509428, 0.164462)
 mesh = SubResource("BoxMesh_llfh3")
 
 [node name="MeshInstance3D9" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.258592, -0.0189179, 0.0582089, -0.525301, -0.00176178, 0.846165, -0.810672, -0.00489293, -0.529733, 0.262976, 0.275612, -0.547925)
+transform = Transform3D(0.775776, -0.057853874, 0.17462587, -1.5759025, -0.0053877835, 2.5384958, -2.4320164, -0.014963317, -1.5891963, 0.262976, 0.275612, -0.547925)
 mesh = SubResource("BoxMesh_llfh3")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.298749, -0.00470134, -0.923758, -0.454151, -0.0160025, 0.358451, -0.839342, 0.010332, 0.134845, 0.484934, 0, 0.0812305)
+transform = Transform3D(-0.89624774, -0.014377407, -2.771275, -1.3624537, -0.048938055, 1.0753541, -2.518027, 0.031596787, 0.40453443, 0.484934, 0, 0.0812305)
 mesh = SubResource("BoxMesh_llfh3")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -4,11 +4,12 @@
 [ext_resource type="PackedScene" uid="uid://bjl8086106it7" path="res://assets/asteroid/asteroid_mesh.tscn" id="2_6mo6b"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_6mo6b"]
-radius = 1.5
+resource_local_to_scene = true
+radius = 10.0
 
 [node name="Asteroid" type="RigidBody3D"]
 collision_layer = 64
-collision_mask = 64
+collision_mask = 67
 can_sleep = false
 continuous_cd = true
 contact_monitor = true
@@ -20,5 +21,6 @@ metadata/_edit_group_ = true
 shape = SubResource("SphereShape3D_6mo6b")
 
 [node name="Mesh" parent="." instance=ExtResource("2_6mo6b")]
+transform = Transform3D(700, 0, 0, 0, -3.059797e-05, 700, 0, -700, -3.059797e-05, 0, 0, 0)
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -1,14 +1,14 @@
 [gd_scene load_steps=5 format=3 uid="uid://cior0dcs6ed63"]
 
 [ext_resource type="Script" uid="uid://dlrytaiuyn55o" path="res://scripts/enemy.gd" id="1_md0e3"]
-[ext_resource type="PackedScene" uid="uid://d2tshxa5a01pa" path="res://assets/enemy.gltf" id="2_4ra3w"]
+[ext_resource type="PackedScene" uid="uid://c7get6g3tjt8c" path="res://assets/enemies/enemy.tscn" id="2_md0e3"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_5uy6h"]
-radius = 2.5
+[sub_resource type="BoxShape3D" id="BoxShape3D_4ra3w"]
+size = Vector3(20, 4, 20)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_md0e3"]
-height = 35.0
-radius = 6.0
+height = 50.0
+radius = 8.0
 
 [node name="Enemy" type="RigidBody3D"]
 collision_layer = 4
@@ -19,16 +19,18 @@ max_contacts_reported = 4
 script = ExtResource("1_md0e3")
 metadata/_edit_group_ = true
 
-[node name="Mesh" parent="." instance=ExtResource("2_4ra3w")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+[node name="Enemy" parent="." instance=ExtResource("2_md0e3")]
+transform = Transform3D(-8.742278e-06, -200, -8.742278e-06, 0, -8.742278e-06, 200, -200, 8.742278e-06, 3.8213708e-13, 0, 0, 0)
 
 [node name="Collision" type="CollisionShape3D" parent="."]
-shape = SubResource("SphereShape3D_5uy6h")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+shape = SubResource("BoxShape3D_4ra3w")
 
 [node name="RangeCone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.620742)
 
 [node name="Cone1" type="CollisionShape3D" parent="RangeCone"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 20)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 27.259502)
 shape = SubResource("CylinderShape3D_md0e3")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
