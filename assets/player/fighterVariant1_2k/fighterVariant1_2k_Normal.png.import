@@ -3,17 +3,16 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cg4ktux6krj2y"
-path.s3tc="res://.godot/imported/fighterVariant1_2k_Normal.png-034a490e04c197ed451ffb7f4b30dbda.s3tc.ctex"
 path.etc2="res://.godot/imported/fighterVariant1_2k_Normal.png-034a490e04c197ed451ffb7f4b30dbda.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/player/fighterVariant1_2k/fighterVariant1_2k_Normal.png"
-dest_files=["res://.godot/imported/fighterVariant1_2k_Normal.png-034a490e04c197ed451ffb7f4b30dbda.s3tc.ctex", "res://.godot/imported/fighterVariant1_2k_Normal.png-034a490e04c197ed451ffb7f4b30dbda.etc2.ctex"]
+dest_files=["res://.godot/imported/fighterVariant1_2k_Normal.png-034a490e04c197ed451ffb7f4b30dbda.etc2.ctex"]
 
 [params]
 

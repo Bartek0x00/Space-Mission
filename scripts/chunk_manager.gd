@@ -10,9 +10,12 @@ const SCENES: Dictionary = {
 	"Planet": preload("res://scenes/planet.tscn"),
 	"Enemy": preload("res://scenes/enemy.tscn")
 }
+
 var loaded_chunks: Dictionary = {}
+var occupied_regions: Array[Dictionary] = []
 
 const SPAWN_PADDING: float = 32.0
+const SEPARATION_PADDING: float = 64.0
 
 func get_chunk_coords(world_pos: Vector3) -> Vector3i:
 	return Vector3i(
@@ -41,6 +44,11 @@ func generate_chunk(global_seed: int, player_global_position: Vector3) -> void:
 	for coord in to_unload:
 		_unload_chunk(coord)
 
+func _is_overlapping(a: Dictionary, b: Dictionary) -> bool:
+	var dsq = (a["c"] - b["c"]).length_squared()
+	var limit = a["r"] + b["r"] + SEPARATION_PADDING
+	return dsq < limit * limit
+
 func _load_chunk(chunk_coord: Vector3i, global_seed: int) -> void:
 	var container = Node3D.new()
 	container.name = "chunk_%d_%d_%d" % [chunk_coord.x, chunk_coord.y, chunk_coord.z]
@@ -50,6 +58,7 @@ func _load_chunk(chunk_coord: Vector3i, global_seed: int) -> void:
 	
 	var rng = _rng_for_chunk(global_seed, chunk_coord.x, chunk_coord.y, chunk_coord.z)
 	
+	occupied_regions = []
 	_spawn_planets(container, rng, chunk_coord)
 	#_spawn_asteroids(container, rng, chunk_coord)
 	#_spawn_collectables(container, rng, chunk_coord)
@@ -84,16 +93,32 @@ func _spawn_planets(root_container: Node3D, rng: RandomNumberGenerator, chunk_co
 	container.name = "Planets"
 	root_container.add_child(container)
 	
-	var count = rng.randi_range(0, 1)
+	var count = rng.randi_range(0, 48)
 	for i in range(count):
 		var local = _rand_local_pos_with_padding(rng)
 		var world_pos = _world_pos(chunk_coord, local)
 		if get_chunk_coords(world_pos) != chunk_coord:
 			continue
-		var obj = SCENES["Planet"].instantiate()
-		obj.rng = rng
-		container.add_child(obj)
-		obj.global_position = world_pos
+		var planet = SCENES["Planet"].instantiate()
+		planet.rng = rng
+		var type = planet.pick_planet()
+		var tmp_obj = {
+			"c": world_pos,
+			"r": type.scale * 0.5
+		}
+		
+		var is_overlap: bool = false
+		for obj in occupied_regions:
+			if _is_overlapping(obj, tmp_obj):
+				is_overlap = true
+				break
+		if is_overlap:
+			pass
+			
+		planet.planet_type = type
+		container.add_child(planet)
+		planet.global_position = world_pos
+		occupied_regions.append(tmp_obj)
 
 func _spawn_asteroids(root_container: Node3D, rng: RandomNumberGenerator, chunk_coord: Vector3i) -> void:
 	var container = Node3D.new()

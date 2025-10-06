@@ -3,17 +3,16 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cugdn5i7gxflk"
-path.s3tc="res://.godot/imported/asteroid_Control.jpg-dbfbbe5fe2fcc56efce6709bfde28db1.s3tc.ctex"
 path.etc2="res://.godot/imported/asteroid_Control.jpg-dbfbbe5fe2fcc56efce6709bfde28db1.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/asteroid/asteroid_Control.jpg"
-dest_files=["res://.godot/imported/asteroid_Control.jpg-dbfbbe5fe2fcc56efce6709bfde28db1.s3tc.ctex", "res://.godot/imported/asteroid_Control.jpg-dbfbbe5fe2fcc56efce6709bfde28db1.etc2.ctex"]
+dest_files=["res://.godot/imported/asteroid_Control.jpg-dbfbbe5fe2fcc56efce6709bfde28db1.etc2.ctex"]
 
 [params]
 

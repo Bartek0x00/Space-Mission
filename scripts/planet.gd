@@ -44,13 +44,14 @@ var PLANET_TYPES: Array[PlanetData] = [
 ]
 
 var rng: RandomNumberGenerator
+var planet_type: PlanetData
+
 
 func _ready() -> void:
-	var planet_type := _pick_planet()
 	$Mesh.material_override = planet_type.material
 	scale *= planet_type.scale
 
-func _pick_planet() -> PlanetData:
+func pick_planet() -> PlanetData:
 	var total_weight = 0
 	for entry in PLANET_TYPES:
 		total_weight += entry.rand_weight
