@@ -1,0 +1,48 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://cbistps62tnfx"]
+
+[ext_resource type="Shader" uid="uid://fvwjdrdf0nif" path="res://shaders/clouds.gdshader" id="1_nalj2"]
+[ext_resource type="Shader" uid="uid://cb6ytrjdbmdo7" path="res://shaders/body.gdshader" id="2_pesgy"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_lh05w"]
+seed = 226
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_adrf3"]
+noise = SubResource("FastNoiseLite_lh05w")
+seamless = true
+seamless_blend_skirt = 0.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xtehg"]
+render_priority = 0
+shader = ExtResource("1_nalj2")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_adrf3")
+shader_parameter/speed = 0.005
+shader_parameter/brightness = 0.728
+shader_parameter/threshold = 1.102
+shader_parameter/fluffiness = 0.376
+shader_parameter/distance_fade_min = 2500.0
+shader_parameter/distance_fade_max = 2000.0
+
+[resource]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_xtehg")
+shader = ExtResource("2_pesgy")
+shader_parameter/emit = 0.0
+shader_parameter/color_1 = Color(0.309804, 0.611765, 0.784314, 1)
+shader_parameter/color_1_treshold = 0.287
+shader_parameter/color_1_roughness = 0.0
+shader_parameter/color_1_emit = false
+shader_parameter/color_2 = Color(0.470588, 0.678431, 0.807843, 1)
+shader_parameter/color_2_treshold = 0.374
+shader_parameter/color_3 = Color(0.615686, 0.745098, 0.831373, 1)
+shader_parameter/color_3_treshold = 0.472
+shader_parameter/color_4 = Color(0.92549, 0.937255, 0.972549, 1)
+shader_parameter/color_4_treshold = 0.573
+shader_parameter/color_5 = Color(0.819608, 0.847059, 0.886275, 1)
+shader_parameter/color_5_treshold = 1.0
+shader_parameter/noise_gaseous = false
+shader_parameter/noise_gaseous_speed = 0.002000000095
+shader_parameter/noise_scale = 1.0
+shader_parameter/noise = SubResource("NoiseTexture2D_adrf3")
+shader_parameter/distance_fade_min = 2499.99994412
+shader_parameter/distance_fade_max = 1999.999955296
+shader_parameter/expensive_distance_threshold = 1500.0

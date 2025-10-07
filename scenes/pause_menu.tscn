@@ -1,0 +1,67 @@
+[gd_scene load_steps=2 format=3 uid="uid://osopme8d5is5"]
+
+[ext_resource type="Script" uid="uid://dpe76thscbcs0" path="res://scripts/pause_menu.gd" id="1_n87rw"]
+
+[node name="PauseMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_n87rw")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0.10799999, 0.36, 0.5019608)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="SaveButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+disabled = true
+text = "Save"
+
+[node name="MenuButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Main Menu"
+
+[node name="UpgradeButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Upgrade"
+
+[node name="ResumeButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Resume"
+
+[connection signal="button_down" from="VBoxContainer/MenuButton" to="." method="_on_menu_button_button_down"]
+[connection signal="button_down" from="VBoxContainer/UpgradeButton" to="." method="_on_upgrade_button_button_down"]
+[connection signal="button_down" from="VBoxContainer/ResumeButton" to="." method="_on_resume_button_button_down"]

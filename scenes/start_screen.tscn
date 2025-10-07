@@ -1,0 +1,150 @@
+[gd_scene load_steps=3 format=3 uid="uid://bmpw3y6v87q5o"]
+
+[ext_resource type="Script" uid="uid://jnwlmcxm1ye6" path="res://scripts/start_screen.gd" id="1_tx5wa"]
+[ext_resource type="VideoStream" uid="uid://c5x5urvrj1wrm" path="res://assets/movie/movie.ogv" id="2_o7i0r"]
+
+[node name="StartScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tx5wa")
+
+[node name="Background" type="VideoStreamPlayer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+stream = ExtResource("2_o7i0r")
+autoplay = true
+loop = true
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 598.0
+offset_bottom = 1082.0
+color = Color(0, 0.1333332, 1, 0.13725491)
+
+[node name="GeneralSettings" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.045
+anchor_top = 0.63000005
+anchor_right = 0.045
+anchor_bottom = 0.63000005
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="SinglePlayer" type="Button" parent="GeneralSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Single Player"
+
+[node name="Local Co-Op" type="Button" parent="GeneralSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Local Co-Op"
+
+[node name="MultiPlayer" type="Button" parent="GeneralSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "MultiPlayer"
+
+[node name="Settings" type="Button" parent="GeneralSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+disabled = true
+text = "Settings"
+
+[node name="Quit" type="Button" parent="GeneralSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Quit"
+
+[node name="LocalRemoteSettings" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.07300001
+anchor_top = 0.633
+anchor_right = 0.07300001
+anchor_bottom = 0.633
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="BackButton" type="Button" parent="LocalRemoteSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "< Back"
+
+[node name="InputIP" type="LineEdit" parent="LocalRemoteSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+placeholder_text = "127.0.0.1"
+
+[node name="InputNickname" type="LineEdit" parent="LocalRemoteSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 46
+placeholder_text = "Nickname"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LocalRemoteSettings"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HostButton" type="Button" parent="LocalRemoteSettings/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Host"
+
+[node name="JoinButton" type="Button" parent="LocalRemoteSettings/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Join"
+
+[node name="ServerRemoteSettings" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.07300001
+anchor_top = 0.633
+anchor_right = 0.07300001
+anchor_bottom = 0.633
+offset_top = -156.0
+offset_right = 290.0
+offset_bottom = 156.0
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="BackButton" type="Button" parent="ServerRemoteSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "< Back"
+
+[node name="InputNickname" type="LineEdit" parent="ServerRemoteSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 46
+placeholder_text = "Nickname"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ServerRemoteSettings"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="JoinButton" type="Button" parent="ServerRemoteSettings/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 64
+text = "Join"
+
+[connection signal="button_down" from="GeneralSettings/SinglePlayer" to="." method="_on_single_player_button_down"]
+[connection signal="button_down" from="GeneralSettings/Local Co-Op" to="." method="_on_local_co_op_button_down"]
+[connection signal="button_down" from="GeneralSettings/MultiPlayer" to="." method="_on_multi_player_button_down"]
+[connection signal="button_down" from="GeneralSettings/Quit" to="." method="_on_quit_button_down"]
+[connection signal="button_down" from="LocalRemoteSettings/BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="text_changed" from="LocalRemoteSettings/InputIP" to="." method="_on_input_ip_text_changed"]
+[connection signal="text_changed" from="LocalRemoteSettings/InputNickname" to="." method="_on_input_nickname_text_changed"]
+[connection signal="button_down" from="LocalRemoteSettings/HBoxContainer/HostButton" to="." method="_on_host_button_button_down"]
+[connection signal="button_down" from="LocalRemoteSettings/HBoxContainer/JoinButton" to="." method="_on_join_button_button_down"]
+[connection signal="button_down" from="ServerRemoteSettings/BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="text_changed" from="ServerRemoteSettings/InputNickname" to="." method="_on_input_nickname_text_changed"]
+[connection signal="button_down" from="ServerRemoteSettings/HBoxContainer/JoinButton" to="." method="_on_join_button_button_down"]

@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://c1b4gh42gbbme"]
+
+[node name="EnemyPath" type="Path3D"]
+
+[node name="EnemyPathFollow" type="PathFollow3D" parent="."]
+transform = Transform3D(1, 0, 8.742277e-08, 0, 0.9999997, 0, -8.742278e-08, 0, 0.99999994, 400, 0, 0)
+use_model_front = true

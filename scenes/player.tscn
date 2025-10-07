@@ -1,0 +1,516 @@
+[gd_scene load_steps=33 format=3 uid="uid://wkq5kgabux7s"]
+
+[ext_resource type="Script" uid="uid://bws1ajo4ln3nm" path="res://scripts/player.gd" id="1_g2els"]
+[ext_resource type="Texture2D" uid="uid://dx6b8gilf2tu7" path="res://assets/environment.png" id="3_dqkch"]
+[ext_resource type="Texture2D" uid="uid://cddsj5e431p5r" path="res://assets/ui/crosshair1.png" id="3_qhqgy"]
+[ext_resource type="PackedScene" uid="uid://cfi6gugp51m7u" path="res://scenes/fighter.tscn" id="4_dqkch"]
+[ext_resource type="Texture2D" uid="uid://b2ws8d6tds5af" path="res://assets/ui/throttle.png" id="4_tuyoq"]
+[ext_resource type="PackedScene" uid="uid://osopme8d5is5" path="res://scenes/pause_menu.tscn" id="5_qlg0r"]
+[ext_resource type="Shader" uid="uid://b730ukuiqqaw4" path="res://shaders/floating_tag.gdshader" id="7_fjrip"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qlg0r"]
+panorama = ExtResource("3_dqkch")
+
+[sub_resource type="Sky" id="Sky_qhqgy"]
+sky_material = SubResource("PanoramaSkyMaterial_qlg0r")
+
+[sub_resource type="Environment" id="Environment_dqkch"]
+background_mode = 2
+sky = SubResource("Sky_qhqgy")
+ambient_light_color = Color(0.47, 0.47, 0.47, 1)
+glow_enabled = true
+glow_intensity = 0.1
+glow_blend_mode = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fjrip"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0, 0, 0.64705884)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_smehm"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0.6591482, 0, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qlg0r"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.6)
+corner_detail = 6
+expand_margin_left = 10.0
+expand_margin_right = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tuyoq"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.3, 0.3, 0.3, 0.4)
+corner_detail = 6
+expand_margin_left = 8.0
+expand_margin_right = 8.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fjrip"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_tuyoq"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_fjrip"]
+size = Vector2(40, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_smehm"]
+size = Vector2(40, 40)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_smehm"]
+size = Vector2(40, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ur7pv"]
+size = Vector2(40, 40)
+
+[sub_resource type="Shader" id="Shader_fjrip"]
+resource_local_to_scene = true
+code = "shader_type spatial;
+render_mode unshaded, blend_add, cull_disabled, depth_prepass_alpha;
+
+// --------------------------------------------------
+// Flame controls
+// --------------------------------------------------
+uniform float intensity : hint_range(0.0, 1.0) = 0.0; // 0 = off, 1 = full flame
+uniform vec3 flame_color : source_color = vec3(0.1, 0.2, 1.0); // bluish
+uniform float max_length = 3;      // flame length when intensity=1
+uniform float wobble_strength = 0.05; // wobble magnitude
+uniform float wobble_speed = 1.5;     // wobble speed
+uniform float tip_wobble = 2.0;       // multiplier at tip
+uniform float fade_power = 3.0;       // how quickly it fades out
+uniform float base_alpha = 0.8;       // opacity near nozzle
+
+// varyings
+varying float v_t;
+varying float v_wobble;
+
+void vertex() {
+    // normalize Y along flame (assume nozzle at y=0, tip at y=max_length)
+    float y_norm = clamp(VERTEX.y / max_length, 0.0, 1.0);
+
+    // flame length scales with intensity (always attached at nozzle)
+    float new_y = y_norm * max_length * intensity;
+
+    // compute wobble amount: stronger toward the tip
+    float wobble = wobble_strength * mix(1.0, tip_wobble, y_norm);
+    float noise = sin((VERTEX.y * 4.0 + TIME * wobble_speed) + VERTEX.x * 3.0) *
+                  cos((VERTEX.z * 4.0 + TIME * wobble_speed * 0.8));
+    VERTEX.xz += normalize(VERTEX.xz + 0.001) * noise * wobble * intensity;
+
+    // store normalized position and wobble for fragment
+    v_t = y_norm;
+    v_wobble = noise;
+
+    // apply new flame length
+    VERTEX.y = new_y;
+}
+
+void fragment() {
+    if (intensity <= 0.001) {
+        ALPHA = 0.0;
+        discard;
+    }
+
+    // base bluish color — fades from bright to transparent along flame
+    vec3 color = mix(vec3(0.1, 0.3, 1.0), flame_color, 1.0 - v_t);
+    color *= 0.5 + 0.5 * intensity; // desaturate when low intensity
+
+    // alpha falloff
+    float alpha = pow(1.0 - v_t, fade_power) * base_alpha * intensity;
+
+    // slight flicker using v_wobble
+    float flicker = 0.9 + 0.1 * v_wobble;
+    alpha *= flicker;
+    vec3 emission = color * (1.5 + 1.5 * flicker);
+
+    ALBEDO = color;
+    EMISSION = emission;
+    ALPHA = clamp(alpha, 0.0, 1.0);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_smehm"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_fjrip")
+shader_parameter/intensity = 0.0
+shader_parameter/flame_color = Color(0.1, 0.2, 1, 1)
+shader_parameter/max_length = 3.0
+shader_parameter/wobble_strength = 0.05
+shader_parameter/wobble_speed = 1.5
+shader_parameter/tip_wobble = 2.0
+shader_parameter/fade_power = 3.0
+shader_parameter/base_alpha = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ur7pv"]
+material = SubResource("ShaderMaterial_smehm")
+top_radius = 0.6
+bottom_radius = 0.1
+height = 4.0
+
+[sub_resource type="Shader" id="Shader_smehm"]
+resource_local_to_scene = true
+code = "shader_type spatial;
+render_mode unshaded, blend_add, cull_disabled, depth_prepass_alpha;
+
+// --------------------------------------------------
+// Flame controls
+// --------------------------------------------------
+uniform float intensity : hint_range(0.0, 1.0) = 0.0; // 0 = off, 1 = full flame
+uniform vec3 flame_color : source_color = vec3(0.1, 0.2, 1.0); // bluish
+uniform float max_length = 3;      // flame length when intensity=1
+uniform float wobble_strength = 0.05; // wobble magnitude
+uniform float wobble_speed = 1.5;     // wobble speed
+uniform float tip_wobble = 2.0;       // multiplier at tip
+uniform float fade_power = 3.0;       // how quickly it fades out
+uniform float base_alpha = 0.8;       // opacity near nozzle
+
+// varyings
+varying float v_t;
+varying float v_wobble;
+
+void vertex() {
+    // normalize Y along flame (assume nozzle at y=0, tip at y=max_length)
+    float y_norm = clamp(VERTEX.y / max_length, 0.0, 1.0);
+
+    // flame length scales with intensity (always attached at nozzle)
+    float new_y = y_norm * max_length * intensity;
+
+    // compute wobble amount: stronger toward the tip
+    float wobble = wobble_strength * mix(1.0, tip_wobble, y_norm);
+    float noise = sin((VERTEX.y * 4.0 + TIME * wobble_speed) + VERTEX.x * 3.0) *
+                  cos((VERTEX.z * 4.0 + TIME * wobble_speed * 0.8));
+    VERTEX.xz += normalize(VERTEX.xz + 0.001) * noise * wobble * intensity;
+
+    // store normalized position and wobble for fragment
+    v_t = y_norm;
+    v_wobble = noise;
+
+    // apply new flame length
+    VERTEX.y = new_y;
+}
+
+void fragment() {
+    if (intensity <= 0.001) {
+        ALPHA = 0.0;
+        discard;
+    }
+
+    // base bluish color — fades from bright to transparent along flame
+    vec3 color = mix(vec3(0.1, 0.3, 1.0), flame_color, 1.0 - v_t);
+    color *= 0.5 + 0.5 * intensity; // desaturate when low intensity
+
+    // alpha falloff
+    float alpha = pow(1.0 - v_t, fade_power) * base_alpha * intensity;
+
+    // slight flicker using v_wobble
+    float flicker = 0.9 + 0.1 * v_wobble;
+    alpha *= flicker;
+    vec3 emission = color * (1.5 + 1.5 * flicker);
+
+    ALBEDO = color;
+    EMISSION = emission;
+    ALPHA = clamp(alpha, 0.0, 1.0);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y4r1p"]
+resource_local_to_scene = true
+render_priority = 0
+shader = SubResource("Shader_smehm")
+shader_parameter/intensity = 0.0
+shader_parameter/flame_color = Color(0.1, 0.2, 1, 1)
+shader_parameter/max_length = 3.0
+shader_parameter/wobble_strength = 0.05
+shader_parameter/wobble_speed = 1.5
+shader_parameter/tip_wobble = 2.0
+shader_parameter/fade_power = 3.0
+shader_parameter/base_alpha = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_d2wvv"]
+material = SubResource("ShaderMaterial_y4r1p")
+top_radius = 0.6
+bottom_radius = 0.1
+height = 4.0
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_tuyoq"]
+size = Vector2(8, 8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ur7pv"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.1, 0.1, 0.1, 0.3)
+corner_detail = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y4r1p"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0.827222, 0, 1)
+corner_detail = 6
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_smehm"]
+viewport_path = NodePath("TagViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ur7pv"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("7_fjrip")
+shader_parameter/near_distance = 0.0
+shader_parameter/far_distance = 400.000016625
+shader_parameter/near_scale = 2.00000009174012
+shader_parameter/far_scale = 48.000002276740126
+shader_parameter/albedo_texture = SubResource("ViewportTexture_smehm")
+shader_parameter/scale_curve = 2.0
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_tuyoq"]
+viewport_path = NodePath("TagViewport")
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_mask = 93
+slide_on_ceiling = false
+script = ExtResource("1_g2els")
+metadata/_edit_group_ = true
+
+[node name="fighter" parent="." instance=ExtResource("4_dqkch")]
+transform = Transform3D(-8.742278e-06, -200, 2.3849761e-06, 0, 2.3849761e-06, 200, -200, 8.742278e-06, -1.0425061e-13, 0, -0.6, -3)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9997426, 0.022687335, 0, -0.022687335, 0.9997426, 0, 3.2276256, 8.286871)
+environment = SubResource("Environment_dqkch")
+
+[node name="Collision" type="CollisionPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.1, 0)
+depth = 1.5
+polygon = PackedVector2Array(-1.75, 2.4, -2.7, 1.6, -2.75, -0.2, -1.5, -1.4, -0.5, -6, 0.5, -6, 1.5, -1.4, 2.75, -0.2, 2.7, 1.6, 1.75, 2.4)
+
+[node name="Guns" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.999391, -0.0348995, 0, 0.0348995, 0.999391, 0, 0.376025, -5.09144)
+
+[node name="CentralGun" type="Marker3D" parent="Guns"]
+transform = Transform3D(1.0000002, 0, 0, 0, 0.9998477, -0.017452411, 0, 0.017452406, 0.99984807, 0, -0.21227726, -1.2384949)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Nickname" type="Label" parent="UI"]
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 70.0
+offset_bottom = 77.0
+theme_override_font_sizes/font_size = 48
+
+[node name="HealthBar" type="ProgressBar" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -256.0
+offset_top = 30.0
+offset_right = 256.0
+offset_bottom = 94.0
+grow_horizontal = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_fjrip")
+theme_override_styles/fill = SubResource("StyleBoxFlat_smehm")
+step = 1.0
+value = 100.0
+rounded = true
+show_percentage = false
+
+[node name="Label" type="Label" parent="UI/HealthBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "100 HP"
+
+[node name="Throttle" type="VSlider" parent="UI"]
+anchors_preset = -1
+anchor_left = 0.924
+anchor_top = 0.638
+anchor_right = 0.924
+anchor_bottom = 0.638
+offset_left = -75.08008
+offset_top = -212.04004
+offset_right = -2.0800781
+offset_bottom = -14.040039
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(2, 2)
+size_flags_horizontal = 8
+theme_override_constants/center_grabber = 1
+theme_override_icons/grabber = ExtResource("4_tuyoq")
+theme_override_icons/grabber_highlight = ExtResource("4_tuyoq")
+theme_override_icons/grabber_disabled = ExtResource("4_tuyoq")
+theme_override_styles/slider = SubResource("StyleBoxFlat_qlg0r")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_tuyoq")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxEmpty_fjrip")
+rounded = true
+scrollable = false
+
+[node name="Crosshair" type="TextureRect" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.18, 0.18)
+pivot_offset = Vector2(64, 64)
+texture = ExtResource("3_qhqgy")
+expand_mode = 1
+stretch_mode = 2
+
+[node name="ScoreBoard" type="VBoxContainer" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -72.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = 72.0
+grow_horizontal = 0
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("5_qlg0r")]
+visible = false
+
+[node name="CenterAccel" type="TouchScreenButton" parent="UI"]
+material = SubResource("CanvasItemMaterial_tuyoq")
+position = Vector2(210, 57)
+texture_normal = SubResource("PlaceholderTexture2D_fjrip")
+shape = SubResource("RectangleShape2D_smehm")
+visibility_mode = 1
+
+[node name="PauseMenuButton" type="TouchScreenButton" parent="UI"]
+position = Vector2(26, 207)
+texture_normal = SubResource("PlaceholderTexture2D_smehm")
+shape = SubResource("RectangleShape2D_ur7pv")
+action = "escape"
+visibility_mode = 1
+
+[node name="Thrusters" type="Node3D" parent="."]
+
+[node name="Main" type="Node3D" parent="Thrusters"]
+
+[node name="Left" type="MeshInstance3D" parent="Thrusters/Main"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.5, -0.1, 2.35)
+mesh = SubResource("CylinderMesh_ur7pv")
+
+[node name="Right" type="MeshInstance3D" parent="Thrusters/Main"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.5, -0.1, 2.35)
+mesh = SubResource("CylinderMesh_d2wvv")
+
+[node name="RCS" type="Node3D" parent="Thrusters"]
+
+[node name="TagViewport" type="SubViewport" parent="."]
+transparent_bg = true
+handle_input_locally = false
+gui_disable_input = true
+size = Vector2i(256, 96)
+render_target_clear_mode = 2
+render_target_update_mode = 4
+
+[node name="Control" type="Control" parent="TagViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="TagViewport/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.25335804, 0.25335804, 0.25335804, 0.59607846)
+
+[node name="VBox" type="VBoxContainer" parent="TagViewport/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="TagViewport/Control/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="NicknameIcon" type="TextureRect" parent="TagViewport/Control/VBox/HBox"]
+layout_mode = 2
+texture = SubResource("PlaceholderTexture2D_tuyoq")
+expand_mode = 2
+
+[node name="NicknameTag" type="Label" parent="TagViewport/Control/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 44
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="HealthBar" type="ProgressBar" parent="TagViewport/Control/VBox"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_ur7pv")
+theme_override_styles/fill = SubResource("StyleBoxFlat_y4r1p")
+step = 1.0
+value = 100.0
+rounded = true
+show_percentage = false
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FloatingTag" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0656118, 0)
+material_override = SubResource("ShaderMaterial_ur7pv")
+pixel_size = 0.005
+billboard = 1
+no_depth_test = true
+texture = SubResource("ViewportTexture_tuyoq")
+
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="value_changed" from="UI/Throttle" to="." method="_on_throttle_value_changed"]
+[connection signal="pressed" from="UI/CenterAccel" to="." method="_on_center_accel_pressed"]

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://ypck5285upfy"]
+
+[ext_resource type="Script" uid="uid://6h80g83l7sx0" path="res://scripts/main.gd" id="1_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://08rk50wg4ekh" path="res://scenes/chunk_manager.tscn" id="8_tipki"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_jyhfs")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.701929, -0.480187, 0.526038, 0, 0.738561, 0.674186, -0.712247, -0.473231, 0.518418, 0, 1.54736, 1.80861)
+light_energy = 1.4
+shadow_enabled = true
+
+[node name="ChunkManager" parent="." instance=ExtResource("8_tipki")]

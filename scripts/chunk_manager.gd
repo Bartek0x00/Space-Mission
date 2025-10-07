@@ -1,0 +1,216 @@
+extends Node3D
+
+const CHUNK_SIZE: int = 1200
+const VIEW_DISTANCE: int = 2
+
+const SCENES: Dictionary = {
+	"Collectable": preload("res://scenes/collectable.tscn"),
+	"Asteroid": preload("res://scenes/asteroid.tscn"),
+	"Bullet": preload("res://scenes/bullet.tscn"),
+	"Planet": preload("res://scenes/planet.tscn"),
+	"Enemy": preload("res://scenes/enemy.tscn"),
+	"EnemyPath": preload("res://scenes/enemy_path.tscn")
+}
+
+const ENEMY_PATHS: Array[Curve3D] = [
+	preload("res://assets/enemy_path_curves/curve1.tres"),
+	preload("res://assets/enemy_path_curves/curve2.tres"),
+	preload("res://assets/enemy_path_curves/curve3.tres")
+]
+
+var loaded_chunks: Dictionary = {}
+var occupied_regions: Array[Dictionary] = []
+
+const SPAWN_PADDING: float = 32.0
+const SEPARATION_PADDING: float = 64.0
+
+func get_chunk_coords(world_pos: Vector3) -> Vector3i:
+	return Vector3i(
+		int(floor(world_pos.x / CHUNK_SIZE)),
+		int(floor(world_pos.y / CHUNK_SIZE)),
+		int(floor(world_pos.z / CHUNK_SIZE))
+	)
+
+func generate_chunk(global_seed: int, player_global_position: Vector3) -> void:
+	var center_chunk: Vector3i = get_chunk_coords(player_global_position)
+	for cx in range(center_chunk.x - VIEW_DISTANCE, center_chunk.x + VIEW_DISTANCE + 1):
+		for cy in range(center_chunk.y - VIEW_DISTANCE, center_chunk.y + VIEW_DISTANCE + 1):
+			for cz in range(center_chunk.z - VIEW_DISTANCE, center_chunk.z + VIEW_DISTANCE + 1):
+				var coord = Vector3i(cx, cy, cz)
+				if not loaded_chunks.has(coord):
+					_load_chunk(coord, global_seed)
+	
+	var to_unload = []
+	for coord in loaded_chunks.keys():
+		var dx = abs(coord.x - center_chunk.x)
+		var dy = abs(coord.y - center_chunk.y)
+		var dz = abs(coord.z - center_chunk.z)
+		if dx > VIEW_DISTANCE or dy > VIEW_DISTANCE or dz > VIEW_DISTANCE:
+			to_unload.append(coord)
+	
+	for coord in to_unload:
+		_unload_chunk(coord)
+
+func _is_overlapping(a: Dictionary, b: Dictionary) -> bool:
+	var dsq = (a["c"] - b["c"]).length_squared()
+	var limit = a["r"] + b["r"] + SEPARATION_PADDING
+	return dsq < limit * limit
+
+func _load_chunk(chunk_coord: Vector3i, global_seed: int) -> void:
+	var container = Node3D.new()
+	container.name = "chunk_%d_%d_%d" % [chunk_coord.x, chunk_coord.y, chunk_coord.z]
+	add_child(container)
+	container.position = Vector3(chunk_coord.x * CHUNK_SIZE, chunk_coord.y * CHUNK_SIZE, chunk_coord.z * CHUNK_SIZE)
+	loaded_chunks[chunk_coord] = container
+	
+	var rng = _rng_for_chunk(global_seed, chunk_coord.x, chunk_coord.y, chunk_coord.z)
+	
+	occupied_regions = []
+	_spawn_planets(container, rng, chunk_coord)
+	_spawn_asteroids(container, rng, chunk_coord)
+	_spawn_collectables(container, rng, chunk_coord)
+	_spawn_enemies(container, rng, chunk_coord)
+
+func _unload_chunk(chunk_coord: Vector3i) -> void:
+	var container = loaded_chunks.get(chunk_coord, null)
+	if container:
+		container.queue_free()
+	loaded_chunks.erase(chunk_coord)
+
+func _rng_for_chunk(global_seed: int, cx: int, cy: int, cz: int) -> RandomNumberGenerator:
+	var rng = RandomNumberGenerator.new()
+	
+	var combined = int(global_seed) ^ (cx * 73856093) ^ (cy * 19349663) ^ (cz * 83492791)
+	if combined < 0:
+		combined = -combined
+	rng.seed = combined
+	return rng
+
+func _rand_local_pos_with_padding(rng: RandomNumberGenerator) -> Vector3:
+	var x = rng.randf_range(-SPAWN_PADDING, CHUNK_SIZE + SPAWN_PADDING)
+	var y = rng.randf_range(-SPAWN_PADDING, CHUNK_SIZE + SPAWN_PADDING)
+	var z = rng.randf_range(-SPAWN_PADDING, CHUNK_SIZE + SPAWN_PADDING)
+	return Vector3(x, y, z)
+
+func _world_pos(chunk_coord: Vector3i, local_pos: Vector3) -> Vector3:
+	return Vector3(chunk_coord.x * CHUNK_SIZE, chunk_coord.y * CHUNK_SIZE, chunk_coord.z * CHUNK_SIZE) + local_pos
+
+func _spawn_planets(root_container: Node3D, rng: RandomNumberGenerator, chunk_coord: Vector3i) -> void:
+	var container = Node3D.new()
+	container.name = "Planets"
+	root_container.add_child(container)
+	
+	var count = rng.randi_range(0, 4)
+	for i in range(count):
+		var local = _rand_local_pos_with_padding(rng)
+		var world_pos = _world_pos(chunk_coord, local)
+		if get_chunk_coords(world_pos) != chunk_coord:
+			continue
+		var planet = SCENES["Planet"].instantiate()
+		planet.rng = rng
+		var type = planet.pick_planet()
+		var tmp_obj = {
+			"c": world_pos,
+			"r": type.scale * 0.5
+		}
+		
+		var is_overlap: bool = false
+		for obj in occupied_regions:
+			if _is_overlapping(obj, tmp_obj):
+				is_overlap = true
+				break
+		if is_overlap:
+			continue
+			
+		planet.planet_type = type
+		container.add_child(planet)
+		planet.global_position = world_pos
+		occupied_regions.append(tmp_obj)
+
+func _spawn_asteroids(root_container: Node3D, rng: RandomNumberGenerator, chunk_coord: Vector3i) -> void:
+	var container = Node3D.new()
+	container.name = "Asteroids"
+	root_container.add_child(container)
+	
+	var count = rng.randi_range(0, 2)
+	for i in range(count):
+		var local = _rand_local_pos_with_padding(rng)
+		var world_pos = _world_pos(chunk_coord, local)
+		if get_chunk_coords(world_pos) != chunk_coord:
+			continue
+		var asteroid = SCENES["Asteroid"].instantiate()
+		var tmp_obj = {
+			"c": world_pos,
+			"r": 5.0
+		}
+		
+		var is_overlap: bool = false
+		for obj in occupied_regions:
+			if _is_overlapping(obj, tmp_obj):
+				is_overlap = true
+				break
+		if is_overlap:
+			continue
+		
+		var rand_axis = rng.randf_range(0.5, 0.6) * 49
+		var linear_vec = Vector3(rand_axis, -40 + (rand_axis / 2), (rand_axis * 0.89) + 100)
+		var rotation_vec = Vector3(rand_axis * 0.123, -rand_axis, 1.58).normalized()
+		asteroid.linear_velocity = linear_vec.rotated(rotation_vec, rng.randf_range(0.0, 90.0))
+		asteroid.angular_velocity = rotation_vec
+		container.add_child(asteroid)
+		asteroid.global_position = world_pos
+		occupied_regions.append(tmp_obj)
+
+func _spawn_collectables(root_container: Node3D, rng: RandomNumberGenerator, chunk_coord: Vector3i) -> void:
+	var container = Node3D.new()
+	container.name = "Collectables"
+	root_container.add_child(container)
+	
+	var count = rng.randi_range(0, 8)
+	for i in range(count):
+		var local = _rand_local_pos_with_padding(rng)
+		var world_pos = _world_pos(chunk_coord, local)
+		if get_chunk_coords(world_pos) != chunk_coord:
+			continue
+		var collectable = SCENES["Collectable"].instantiate()
+		var tmp_obj = {
+			"c": world_pos,
+			"r": 2.0
+		}
+		
+		var is_overlap: bool = false
+		for obj in occupied_regions:
+			if _is_overlapping(obj, tmp_obj):
+				is_overlap = true
+				break
+		if is_overlap:
+			continue
+			
+		container.add_child(collectable)
+		collectable.global_position = world_pos
+		occupied_regions.append(tmp_obj)
+
+func _spawn_enemies(root_container: Node3D, rng: RandomNumberGenerator, chunk_coord: Vector3i) -> void:
+	var container = Node3D.new()
+	container.name = "Enemies"
+	root_container.add_child(container)
+	
+	var count = rng.randi_range(0, 1)
+	for i in range(count):
+		var local = _rand_local_pos_with_padding(rng)
+		var world_pos = _world_pos(chunk_coord, local)
+		if get_chunk_coords(world_pos) != chunk_coord:
+			continue
+		var enemy_path = SCENES["EnemyPath"].instantiate()
+		enemy_path.curve = ENEMY_PATHS[int((world_pos.x * world_pos.y) + world_pos.z) % ENEMY_PATHS.size()]
+		container.add_child(enemy_path)
+		enemy_path.rotation = Vector3(
+			rng.randf_range(-90, 90),
+			rng.randf_range(-90, 90),
+			rng.randf_range(-90, 90)
+		)
+		enemy_path.global_position = world_pos
+		
+		var enemy = SCENES["Enemy"].instantiate()
+		enemy.path_follow = enemy_path.get_node("EnemyPathFollow")
+		container.add_child(enemy)
